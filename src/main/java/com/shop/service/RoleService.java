@@ -1,5 +1,7 @@
 package com.shop.service;
 
-public interface RoleService {
+import com.shop.entity.Role;
 
+public interface RoleService {
+	Role findByName(String name);
 }

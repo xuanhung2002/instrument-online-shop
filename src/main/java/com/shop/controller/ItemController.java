@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.shop.converter.Converter;
 import com.shop.dto.ItemDTO;
 import com.shop.entity.Category;
 import com.shop.entity.Image;
@@ -26,7 +24,6 @@ import com.shop.service.CategoryService;
 import com.shop.service.ImageService;
 import com.shop.service.ItemService;
 import com.shop.utils.FileUtils;
-import com.shop.utils.SortingUtils;
 
 @RestController
 @RequestMapping("api/item")
@@ -39,13 +36,15 @@ public class ItemController {
 	@Autowired
 	ImageService imageService;
 	@Autowired
-	Converter converter;
-	@Autowired
 	FileUtils fileUtils;
 
-	@GetMapping("/")
-	public ResponseEntity<List<ItemDTO>> getAll() {
-		return new ResponseEntity<>(itemService.getAll(), HttpStatus.OK);
+	@GetMapping("")
+	public ResponseEntity<List<ItemDTO>> getAll(
+			@RequestParam(name = "page", defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "size", defaultValue = "5") Integer pageSize,
+			@RequestParam(name = "sortBy", defaultValue = "name-asc") String sortBy) {
+		
+		return new ResponseEntity<>(itemService.getAll(pageNo, pageSize, sortBy), HttpStatus.OK);
 	}
 
 	@PostMapping("/add")
@@ -101,13 +100,14 @@ public class ItemController {
 
 	@GetMapping("/{categoryName}")
 	public ResponseEntity<List<ItemDTO>> getItemSByCategoryName(@PathVariable String categoryName,
-			@RequestParam(name = "sortBy", required = false) String sortBy) {
+			@RequestParam(name = "page", defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "size", defaultValue = "5") Integer pageSize,
+			@RequestParam(name = "sortBy", defaultValue = "name-asc") String sortBy) {
+		
+		
 		Optional<Category> categoryOpt = categoryService.findOneByName(categoryName);
 		if (categoryOpt.isPresent()) {
-			List<ItemDTO> items = new ArrayList<ItemDTO>(itemService.findByCategory(categoryOpt.get()));
-			if (sortBy != null) {
-				items.sort(SortingUtils.getComparatorForSorting(sortBy));
-			}
+			List<ItemDTO> items = new ArrayList<ItemDTO>(itemService.findByCategory(categoryOpt.get(), pageNo, pageSize, sortBy));
 			return new ResponseEntity<>(items, HttpStatus.OK);
 		}
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -8,8 +8,8 @@ import com.shop.entity.Category;
 import com.shop.entity.Item;
 
 public interface ItemService {
-	List<ItemDTO> getAll();
+	List<ItemDTO> getAll(Integer pageNo, Integer pageSize, String sortBy);
 	Item save(ItemDTO item);
 	Optional<Item> findOneByName(String name);
-	List<ItemDTO> findByCategory(Category category);
+	List<ItemDTO> findByCategory(Category category, Integer pageNo, Integer pageSize, String sortBy);
 }

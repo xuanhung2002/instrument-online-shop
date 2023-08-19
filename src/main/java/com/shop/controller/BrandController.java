@@ -22,7 +22,7 @@ public class BrandController {
 	@Autowired
 	BrandService brandService;
 	
-	@GetMapping("/")
+	@GetMapping("")
 	@ResponseBody
 	public ResponseEntity<List<Brand>> getAll(){
 		return new ResponseEntity<List<Brand>>(brandService.getAll(), HttpStatus.OK);

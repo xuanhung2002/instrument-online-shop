@@ -22,7 +22,7 @@ public class CategoryController {
 	@Autowired
 	CategoryService categoryService;
 	
-	@GetMapping("/")
+	@GetMapping("")
 	@ResponseBody
 	public ResponseEntity<List<Category>> getAll(){
 		System.out.println(categoryService.getAll());
