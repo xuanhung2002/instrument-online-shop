@@ -50,7 +50,9 @@ public class ItemController {
 	@PostMapping("/add")
 	public ResponseEntity<Item> save(@RequestParam("name") String name, @RequestParam("description") String description,
 			@RequestParam("price") Integer price, @RequestParam("brandName") String brandName,
-			@RequestParam("categoryName") String categoryName, @RequestParam("images") List<MultipartFile> images) {
+			@RequestParam("categoryName") String categoryName,
+			@RequestParam("inventoryQuantity") Integer inventoryQuantity,
+			@RequestParam("images") List<MultipartFile> images) {
 
 		ItemDTO itemDTO = new ItemDTO();
 		itemDTO.setName(name);
@@ -58,6 +60,7 @@ public class ItemController {
 		itemDTO.setPrice(price);
 		itemDTO.setBrandName(brandName);
 		itemDTO.setCategoryName(categoryName);
+		itemDTO.setInventoryQuantity(inventoryQuantity);
 
 		Item savedItem = itemService.save(itemDTO);
 		

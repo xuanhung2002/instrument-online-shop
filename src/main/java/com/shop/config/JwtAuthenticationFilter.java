@@ -22,34 +22,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Autowired
 	JwtTokenProvider jwtTokenProvider;
 
-//	@Override
-//	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-//			throws ServletException, IOException {
-//		try {
-//			// Lấy jwt từ request
-//			String jwt = getJwtFromRequest(request);
-//
-//			if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
-//				// Lấy id user từ chuỗi jwt
-////				Integer userId = JwtTokenProvider.getUserIdFromJWT(jwt).intValue();
-//				String username = JwtTokenProvider.getUsernameFromToken(jwt);
-//				// Lấy thông tin người dùng từ id
-//				UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-//				if (userDetails != null) {
-//					// Nếu người dùng hợp lệ, set thông tin cho Seturity Context
-//					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-//							userDetails, null, userDetails.getAuthorities());
-//					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//
-//					SecurityContextHolder.getContext().setAuthentication(authentication);
-//				}
-//			}
-//		} catch (Exception ex) {
-//			logger.error("failed on set user authentication", ex);
-//		}
-//
-//		filterChain.doFilter(request, response);
-//	}
+
 
 	private String getJwtFromRequest(jakarta.servlet.http.HttpServletRequest request) {
 		String bearerToken = request.getHeader("Authorization");

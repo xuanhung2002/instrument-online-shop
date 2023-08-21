@@ -20,12 +20,15 @@ public class ItemDTO {
 	private String categoryName;
 	
 	private List<Image> images;
+	
+	private Integer inventoryQuantity;
 
 	public ItemDTO() {
 	}
 
+
 	public ItemDTO(Integer id, String name, String description, Integer price, String brandName, String categoryName,
-			List<Image> images) {
+			List<Image> images, Integer inventoryQuantity) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -34,6 +37,7 @@ public class ItemDTO {
 		this.brandName = brandName;
 		this.categoryName = categoryName;
 		this.images = images;
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	public Integer getId() {
@@ -91,5 +95,19 @@ public class ItemDTO {
 	public void setImages(List<Image> images) {
 		this.images = images;
 	}
+
+
+	public Integer getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+
+	public void setInventoryQuantity(Integer inventoryQuantity) {
+		if(inventoryQuantity == null) {
+			this.inventoryQuantity = 0;
+		}
+		this.inventoryQuantity = inventoryQuantity;
+	}
+	
 	
 }

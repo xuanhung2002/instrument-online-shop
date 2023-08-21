@@ -22,35 +22,40 @@ public class Item {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "item_id", insertable = false, updatable = false)
 	private Integer id;
-	
+
 	@Column(name = "item_name")
 	private String name;
-	
+
 	@Column(name = "description")
 	private String description;
-	
+
 	@Column(name = "price")
 	private Integer price;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "brand_id")
 	private Brand brand;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "category_id")
 	private Category category;
 	
+	@Column(name = "inventory_quantity")
+	private Integer inventoryQuantity;
+	
 	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
 	private List<CartItem> cartItems;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
 	private List<Image> images;
 	
+
+
 	public Item() {
 	}
 
-	public Item(Integer id, String name, String description, Integer price, Brand brand, Category category) {
+	public Item(Integer id, String name, String description, Integer price, Brand brand, Category category, Integer inventoryQuantity) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -58,6 +63,7 @@ public class Item {
 		this.price = price;
 		this.brand = brand;
 		this.category = category;
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	public Integer getId() {
@@ -106,6 +112,14 @@ public class Item {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}	
+	
+	public Integer getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Integer inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	public List<CartItem> getCartItems() {
@@ -124,6 +138,5 @@ public class Item {
 		this.images = images;
 	}
 	
-	
-	
+
 }

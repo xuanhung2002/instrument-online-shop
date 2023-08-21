@@ -34,6 +34,7 @@ public class Converter {
 		item.setPrice(itemDTO.getPrice());
 		item.setBrand(brandService.findOneByName(itemDTO.getBrandName()).get());
 		item.setCategory(categoryService.findOneByName(itemDTO.getCategoryName()).get());
+		item.setInventoryQuantity(itemDTO.getInventoryQuantity());;
 		return item;
 	}
 	
@@ -46,6 +47,7 @@ public class Converter {
 		itemDTO.setBrandName(item.getBrand().getName());
 		itemDTO.setCategoryName(item.getCategory().getName());
 		itemDTO.setImages(imageService.findAllByItemId(item.getId()));
+		itemDTO.setInventoryQuantity(item.getInventoryQuantity());
 		return itemDTO;
 	}
 	
