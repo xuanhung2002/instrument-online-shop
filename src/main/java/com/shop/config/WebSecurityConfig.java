@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.shop.service.UserService;
+import com.shop.service.impl.CustomUserDetailsService;
 
 import jakarta.servlet.Filter;
 
@@ -22,12 +23,13 @@ import jakarta.servlet.Filter;
 public class WebSecurityConfig {
 
 	private final JwtAuthEntryPoint authEntryPoint;
-	private final UserService userDetailsService;
+	
+	@Autowired
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@Autowired
-	public WebSecurityConfig(JwtAuthEntryPoint authEntryPoint, UserService userDetailsService) {
+	public WebSecurityConfig(JwtAuthEntryPoint authEntryPoint) {
 		this.authEntryPoint = authEntryPoint;
-		this.userDetailsService = userDetailsService;
 	}
 
 	@Bean
@@ -44,27 +46,15 @@ public class WebSecurityConfig {
         .and()
         .authorizeRequests()
         .requestMatchers("/api/auth/**").permitAll()
-        .anyRequest().permitAll()
+        .anyRequest().authenticated()
         .and()
         .httpBasic();
-http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-return http.build();
+		
+		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		return http.build();
 	}
 
 
-	private Filter jwtAuthenticationFilter() {
-		return new JwtAuthenticationFilter();
-	}
-
-//	@Bean
-//	public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
-//			PasswordEncoder passwordEncoder) {
-//		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-//		authenticationProvider.setUserDetailsService(userDetailsService);
-//		authenticationProvider.setPasswordEncoder(passwordEncoder);
-//
-//		return new ProviderManager(authenticationProvider);
-//	}
 
     @Bean
     public AuthenticationManager authenticationManager(

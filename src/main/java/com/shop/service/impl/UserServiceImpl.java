@@ -16,22 +16,8 @@ import exception.UserIdNotFoundException;
 public class UserServiceImpl implements UserService {
 
 	@Autowired
-	UserRepository userRepository;
-
-	@Override
-	public User findByAccount_Username(String username) {
-		return userRepository.findByAccount_Username(username);
-	}
-
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userRepository.findByAccount_Username(username);
-		if (user == null) {
-			throw new UsernameNotFoundException(username);
-		}
-
-		return new CustomUserDetails(user);
-	}
+	private UserRepository userRepository;
+	
 
 	@Override
 	public UserDetails loadUserById(Integer id) throws UsernameNotFoundException {

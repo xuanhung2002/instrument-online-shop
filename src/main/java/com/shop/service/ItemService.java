@@ -12,4 +12,6 @@ public interface ItemService {
 	Item save(ItemDTO item);
 	Optional<Item> findOneByName(String name);
 	List<ItemDTO> findByCategory(Category category, Integer pageNo, Integer pageSize, String sortBy);
+	
+	Integer getItemInventoryQuantityById(Integer idItem);
 }

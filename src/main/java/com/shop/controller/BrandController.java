@@ -19,12 +19,13 @@ import com.shop.service.BrandService;
 @RequestMapping("/api/brand")
 public class BrandController {
 
-	@Autowired
+	@Autowired	
 	BrandService brandService;
 	
 	@GetMapping("")
 	@ResponseBody
 	public ResponseEntity<List<Brand>> getAll(){
+		System.out.println("branch");
 		return new ResponseEntity<List<Brand>>(brandService.getAll(), HttpStatus.OK);
 	}
 	

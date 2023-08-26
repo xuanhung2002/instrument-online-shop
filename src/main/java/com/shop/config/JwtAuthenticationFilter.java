@@ -7,22 +7,29 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.shop.service.UserService;
+import com.shop.service.impl.CustomUserDetailsService;
+import com.shop.service.impl.UserServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	@Autowired
-	UserService customUserDetailsService;
-	@Autowired
-	JwtTokenProvider jwtTokenProvider;
+	private final CustomUserDetailsService customUserDetailsService;
+	private final JwtTokenProvider jwtTokenProvider;
 
-
+	@Autowired
+	public JwtAuthenticationFilter(CustomUserDetailsService customUserDetailsService,
+			JwtTokenProvider jwtTokenProvider) {
+		this.customUserDetailsService = customUserDetailsService;
+		this.jwtTokenProvider = jwtTokenProvider;
+	}
 
 	private String getJwtFromRequest(jakarta.servlet.http.HttpServletRequest request) {
 		String bearerToken = request.getHeader("Authorization");
@@ -61,6 +68,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		filterChain.doFilter(request, response);
-		
+
 	}
 }

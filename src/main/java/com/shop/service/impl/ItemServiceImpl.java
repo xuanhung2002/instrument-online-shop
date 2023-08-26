@@ -63,4 +63,9 @@ public class ItemServiceImpl implements ItemService {
 		List<Item> items = itemRepository.findByCategory(category, pageable);
 		return items.stream().map(t -> converter.toItemDTO(t)).toList();
 	}
+	
+	@Override
+	public Integer getItemInventoryQuantityById(Integer idItem) {
+		return itemRepository.getItemInventoryQuantityById(idItem);
+	}
 }

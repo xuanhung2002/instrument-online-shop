@@ -15,7 +15,7 @@ public class CartItemServiceImpl implements CartItemService{
 	
 	@Autowired
 	CartItemRepository cartItemRepository;
-	@Autowired 
+	@Autowired(required = false)
 	Converter converter;
 	
 	//sau sua thanh getCartItemsForLoggedInUser

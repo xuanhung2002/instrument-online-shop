@@ -21,6 +21,7 @@ import com.shop.dto.UpdateCartItemRequest;
 import com.shop.entity.CartItem;
 import com.shop.service.CartItemService;
 import com.shop.service.CartService;
+import com.shop.service.ItemService;
 
 @Controller
 @RequestMapping("/api/cart")
@@ -31,6 +32,9 @@ public class CartController {
 
 	@Autowired
 	CartService cartService;
+	
+	@Autowired
+	ItemService itemService;
 
 	@GetMapping("")
 	@ResponseBody
@@ -40,9 +44,14 @@ public class CartController {
 
 	@PostMapping("/add")
 	public ResponseEntity<String> addCartItemToCart(@RequestBody NewCartItemRequest cartItemRequest) {
-
+		
 //		String username =??  ==>> user đang đăng nhập ==> thêm param ở trên 
 		String username = "test1"; // hard code to test without authentication
+		
+		if(cartItemRequest.getQuantity() > itemService.getItemInventoryQuantityById(cartItemRequest.getItemId())) {
+			return new ResponseEntity<String>("Not enough quantity of this item in inventory", HttpStatus.OK);
+		}
+				
 		// id cuủa các item trong cart
 		List<Integer> IdOfItemsCurrent = new ArrayList<Integer>();
 

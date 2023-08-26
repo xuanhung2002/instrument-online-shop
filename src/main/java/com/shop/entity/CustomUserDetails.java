@@ -21,7 +21,7 @@ public class CustomUserDetails implements UserDetails {
 	private static final long serialVersionUID = 1L;
 	
 
-	User user;
+	private User user;
 	
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
