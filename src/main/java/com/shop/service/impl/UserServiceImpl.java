@@ -29,6 +29,9 @@ public class UserServiceImpl implements UserService {
 		return new CustomUserDetails(user);
 	}
 
+	public User getUserByUsername(String username){
+		return userRepository.findByAccount_Username(username);
+    }
 	@Override
 	public User save(User user) {
 		return userRepository.save(user);

@@ -19,7 +19,6 @@ import lombok.Setter;
 @Table(name = "role")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 public class Role {	
 	

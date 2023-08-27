@@ -15,7 +15,7 @@ public class CorsConfig {
         corsConfiguration.addAllowedOrigin("http://localhost:5173"); // Thay thế bằng nguồn của ứng dụng React
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
-        
+        corsConfiguration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         

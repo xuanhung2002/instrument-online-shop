@@ -26,11 +26,11 @@ public class BrandController {
 	@ResponseBody
 	public ResponseEntity<List<Brand>> getAll(){
 		System.out.println("branch");
-		return new ResponseEntity<List<Brand>>(brandService.getAll(), HttpStatus.OK);
+		return new ResponseEntity<>(brandService.getAll(), HttpStatus.OK);
 	}
 	
 	@PostMapping("/add")
 	public ResponseEntity<Brand> save(@RequestBody Brand brand){
-	return new ResponseEntity<Brand>(brandService.save(brand), HttpStatus.OK);	
+	return new ResponseEntity<>(brandService.save(brand), HttpStatus.OK);
 	}
 }

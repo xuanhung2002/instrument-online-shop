@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,28 +29,44 @@ import com.shop.service.ItemService;
 @RequestMapping("/api/cart")
 public class CartController {
 
+	private final CartItemService cartItemService;
+	private final CartService cartService;
+	private final ItemService itemService;
 	@Autowired
-	CartItemService cartItemService;
-
-	@Autowired
-	CartService cartService;
-	
-	@Autowired
-	ItemService itemService;
+	public CartController(CartItemService cartItemService, CartService cartService, ItemService itemService) {
+		this.cartItemService = cartItemService;
+		this.cartService = cartService;
+		this.itemService = itemService;
+	}
 
 	@GetMapping("")
 	@ResponseBody
-	public ResponseEntity<List<CartItemDTO>> getCartItemsByUsername() {
-		return new ResponseEntity<List<CartItemDTO>>(cartService.findCartItemsDTOByUsername("test1"), HttpStatus.OK);
+	public ResponseEntity<List<CartItemDTO>> getCartItemsByUsername(Authentication authentication) {
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		String username = userDetails.getUsername();
+
+		if(cartService.findCartByUsername(username) == null){
+			cartService.createCartForUser(username);
+		}
+
+		return new ResponseEntity<>(cartService.findCartItemsDTOByUsername(username), HttpStatus.OK);
 	}
 
 	@PostMapping("/add")
-	public ResponseEntity<String> addCartItemToCart(@RequestBody NewCartItemRequest cartItemRequest) {
+	public ResponseEntity<String> addCartItemToCart(@RequestBody NewCartItemRequest cartItemRequest,
+													Authentication authentication) {
 		
-//		String username =??  ==>> user đang đăng nhập ==> thêm param ở trên 
-		String username = "test1"; // hard code to test without authentication
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		String username = userDetails.getUsername();
+
+		if(cartService.findCartByUsername(username) == null){
+			cartService.createCartForUser(username);
+		}
 		
-		if(cartItemRequest.getQuantity() > itemService.getItemInventoryQuantityById(cartItemRequest.getItemId())) {
+//		if(cartItemRequest.getQuantity() > itemService.getItemInventoryQuantityById(cartItemRequest.getItemId())) {
+//			return new ResponseEntity<String>("Not enough quantity of this item in inventory", HttpStatus.OK);
+//		}
+		if(!availableQuantity(cartItemRequest.getQuantity(), itemService.getItemInventoryQuantityById(cartItemRequest.getItemId()))){
 			return new ResponseEntity<String>("Not enough quantity of this item in inventory", HttpStatus.OK);
 		}
 				
@@ -79,18 +97,34 @@ public class CartController {
 			cartService.addItemCartToCart(username, cartItemRequest.getItemId(), cartItemRequest.getQuantity());
 		}
 
-		return new ResponseEntity<String>("Add cart item to cart success", HttpStatus.OK);
+		return new ResponseEntity<>("Add cart item to cart success", HttpStatus.OK);
 	}
 
 	@PostMapping("/update")
 	public ResponseEntity<String> updateCartItemQuantityInCart(
-			@RequestBody UpdateCartItemRequest updateCartItemRequest) {
+			@RequestBody UpdateCartItemRequest updateCartItemRequest,
+			Authentication authentication) {
 
-//		String username =??  ==>> user đang đăng nhập ==> thêm param ở trên 
-		String username = "test1"; // hard code to test without authentication
+		if(updateCartItemRequest.getNewQuantity() > cartItemService.
+																	findItemByCartItemId(
+																	updateCartItemRequest.getCartItemId())
+																	.getInventoryQuantity()){
+			return new ResponseEntity<>("Not enough item quantity", HttpStatus.OK);
+		}
+
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		String username = userDetails.getUsername();
 		cartService.updateItemCartQuantity(username, updateCartItemRequest.getCartItemId(),
 				updateCartItemRequest.getNewQuantity());
 
-		return new ResponseEntity<String>("Update success", HttpStatus.OK);
+		return new ResponseEntity<>("Update success", HttpStatus.OK);
+	}
+
+	private static boolean availableQuantity(Integer quantityRequest, Integer quantityAvailable){
+		if(quantityRequest > quantityAvailable) {
+			return false;
+		}else {
+			return true;
+		}
 	}
 }

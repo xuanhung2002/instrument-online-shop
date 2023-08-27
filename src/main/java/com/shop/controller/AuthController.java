@@ -1,7 +1,15 @@
 package com.shop.controller;
 
-import java.util.Collections;
-
+import com.shop.config.JwtTokenProvider;
+import com.shop.dto.AuthResponseDTO;
+import com.shop.dto.LoginDTO;
+import com.shop.dto.RegisterDTO;
+import com.shop.entity.Account;
+import com.shop.entity.Role;
+import com.shop.entity.User;
+import com.shop.service.AccountService;
+import com.shop.service.RoleService;
+import com.shop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,40 +23,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.shop.config.JwtTokenProvider;
-import com.shop.dto.AuthResponseDTO;
-import com.shop.dto.LoginDTO;
-import com.shop.dto.RegisterDTO;
-import com.shop.entity.Account;
-import com.shop.entity.Role;
-import com.shop.entity.User;
-import com.shop.service.AccountService;
-import com.shop.service.RoleService;
-import com.shop.service.UserService;
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-	@Autowired
-	AuthenticationManager authenticationManager;
+	private final AuthenticationManager authenticationManager;
+	private final AccountService accountService;
+	private final PasswordEncoder passwordEncoder;
+	private final RoleService roleService;
+	private final UserService userService;
 
 	@Autowired
-	JwtTokenProvider jwtTokenProvider;
+	public AuthController(AuthenticationManager authenticationManager,
+						  AccountService accountService,
+						  PasswordEncoder passwordEncoder,
+						  RoleService roleService,
+						  UserService userService) {
 
-	@Autowired
-	UserService userDetailsService;
-
-	@Autowired
-	AccountService accountService;
-	
-	@Autowired
-	PasswordEncoder passwordEncoder;
-
-	@Autowired
-	RoleService roleService;
-	
-	@Autowired
-	UserService userService;
+		this.authenticationManager = authenticationManager;
+		this.accountService = accountService;
+		this.passwordEncoder = passwordEncoder;
+		this.roleService = roleService;
+		this.userService = userService;
+	}
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginDTO loginDto) {
@@ -62,7 +58,6 @@ public class AuthController {
 
 			return ResponseEntity.ok(new AuthResponseDTO(token));
 		} catch (Exception e) {
-			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
 		}
 	}

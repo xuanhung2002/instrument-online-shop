@@ -15,8 +15,7 @@ import com.shop.entity.Item;
 public interface ItemRepository extends JpaRepository<Item, Integer>{
 	Optional<Item> findFirstByName(String name);
 	List<Item> findByCategory(Category category, Pageable pageable);
-	
-	
+
 	@Query("SELECT i.inventoryQuantity FROM Item i WHERE i.id = :idItem")
 	Integer getItemInventoryQuantityById(Integer idItem);
 }

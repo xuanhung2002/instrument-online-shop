@@ -48,12 +48,12 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 	// Lấy thông tin user từ jwt
-    public static Long getUserIdFromJWT(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.get("userId", Long.class); // Lấy giá trị từ claim userId
-    }
+//    public static Long getUserIdFromJWT(String token) {
+//        Claims claims = Jwts.parserBuilder()
+//                .setSigningKey(SECRET_KEY)
+//                .build()
+//                .parseClaimsJws(token)
+//                .getBody();
+//        return claims.get("userId", Long.class); // Lấy giá trị từ claim userId
+//    }
 }
