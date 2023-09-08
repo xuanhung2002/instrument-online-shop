@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,7 +43,7 @@ public class ItemController {
 	@GetMapping("")
 	public ResponseEntity<List<ItemDTO>> getAll(
 			@RequestParam(name = "page", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "size", defaultValue = "5") Integer pageSize,
+			@RequestParam(name = "size", defaultValue = "15") Integer pageSize,
 			@RequestParam(name = "sortBy", defaultValue = "name-asc") String sortBy) {
 		
 		return new ResponseEntity<>(itemService.getAll(pageNo, pageSize, sortBy), HttpStatus.OK);
