@@ -2,7 +2,8 @@ package com.shop.dto;
 
 public class CartItemDTO {
 	private Integer id;
-	
+
+	private Integer itemId;
 	private String itemImage;
 	
 	private String nameItem;
@@ -17,18 +18,15 @@ public class CartItemDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public CartItemDTO(Integer id, String itemImage, String nameItem, Integer unitPrice, Integer quantity,
-			Integer totalPrice) {
-		super();
+	public CartItemDTO(Integer id, Integer itemId, String itemImage, String nameItem, Integer unitPrice, Integer quantity, Integer totalPrice) {
 		this.id = id;
+		this.itemId = itemId;
 		this.itemImage = itemImage;
 		this.nameItem = nameItem;
 		this.unitPrice = unitPrice;
 		this.quantity = quantity;
 		this.totalPrice = totalPrice;
 	}
-
-
 
 	public Integer getId() {
 		return id;
@@ -40,6 +38,14 @@ public class CartItemDTO {
 
 	public String getItemImage() {
 		return itemImage;
+	}
+
+	public Integer getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(Integer itemId) {
+		this.itemId = itemId;
 	}
 
 	public void setItemImage(String itemImage) {

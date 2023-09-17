@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.shop.entity.Image;
 
+import jakarta.persistence.Lob;
 import lombok.Builder;
 @Builder
 public class ItemDTO {

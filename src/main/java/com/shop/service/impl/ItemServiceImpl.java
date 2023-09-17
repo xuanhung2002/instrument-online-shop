@@ -43,6 +43,12 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
+	public ItemDTO getItemById(Integer id) {
+	Optional<Item> itemOpt = itemRepository.findById(id);
+        return itemOpt.map(item -> converter.toItemDTO(item)).orElse(null);
+	}
+
+	@Override
 	public Item save(ItemDTO itemDTO) {
 		return itemRepository.save(converter.toItemEntity(itemDTO));
 	}
@@ -67,5 +73,15 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public Integer getItemInventoryQuantityById(Integer idItem) {
 		return itemRepository.getItemInventoryQuantityById(idItem);
+	}
+
+	@Override
+	public void deleteItemById(Integer id) {
+		itemRepository.deleteById(id);
+	}
+
+	@Override
+	public boolean existedById(Integer id) {
+		return itemRepository.existsById(id);
 	}
 }

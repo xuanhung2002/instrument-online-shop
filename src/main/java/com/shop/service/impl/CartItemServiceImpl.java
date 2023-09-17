@@ -2,6 +2,7 @@ package com.shop.service.impl;
 
 import java.util.List;
 
+import com.shop.entity.CartItem;
 import com.shop.entity.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,16 @@ public class CartItemServiceImpl implements CartItemService{
 	@Override
 	public Item findItemByCartItemId(Integer id) {
 		return  cartItemRepository.findItemByCartItemId(id);
+	}
+
+	@Override
+	public boolean existById(Integer id) {
+		return cartItemRepository.existsById(id);
+	}
+
+	@Override
+	public void deleteById(Integer id) {
+		cartItemRepository.deleteById(id);
 	}
 
 }

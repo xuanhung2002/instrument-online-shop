@@ -9,9 +9,13 @@ import com.shop.entity.Item;
 
 public interface ItemService {
 	List<ItemDTO> getAll(Integer pageNo, Integer pageSize, String sortBy);
+	ItemDTO getItemById(Integer id);
 	Item save(ItemDTO item);
 	Optional<Item> findOneByName(String name);
 	List<ItemDTO> findByCategory(Category category, Integer pageNo, Integer pageSize, String sortBy);
 	
 	Integer getItemInventoryQuantityById(Integer idItem);
+
+	void deleteItemById(Integer id);
+	boolean existedById(Integer id);
 }

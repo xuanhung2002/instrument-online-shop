@@ -28,7 +28,7 @@ public class Category {
 	@Column(name = "category_description")
 	private String description;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
 	@JsonIgnore
 	private List<Item> items = new ArrayList<Item>();
 	 public Category() {
