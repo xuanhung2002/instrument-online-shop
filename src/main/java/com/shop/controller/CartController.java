@@ -11,11 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.shop.dto.CartItemDTO;
 import com.shop.dto.NewCartItemRequest;
@@ -119,6 +115,30 @@ public class CartController {
 
 		return new ResponseEntity<>("Update success", HttpStatus.OK);
 	}
+
+//	@DeleteMapping("/delete/{id}")
+//	public ResponseEntity<Void> deleteCartItemById(@PathVariable Integer id, Authentication authentication){
+//
+//		if(cartItemService.existById(id)){
+//			cartItemService.deleteById(id);
+//			return new ResponseEntity<>(HttpStatus.OK);
+//		}
+//		else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//	}
+
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<Void> deleteCartItemById(@PathVariable Integer id, Authentication authentication){
+		if(authentication == null || !authentication.isAuthenticated()) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+		//
+		if(cartItemService.existById(id)){
+			cartItemService.deleteById(id);
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+
 
 	private static boolean availableQuantity(Integer quantityRequest, Integer quantityAvailable){
 		if(quantityRequest > quantityAvailable) {

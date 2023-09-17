@@ -55,7 +55,7 @@ public class Converter {
 	public CartItemDTO toCartItemDTO(CartItem cartItem) {
 		CartItemDTO cartItemDTO = new CartItemDTO();
 		cartItemDTO.setId(cartItem.getId());
-		
+		cartItemDTO.setItemId(cartItem.getId());
 		Optional<Image> imageOptional = imageService.findFirstByItemId(cartItem.getItem().getId());
 		if (imageOptional.isPresent()) {
 		    cartItemDTO.setItemImage(imageOptional.get().getImageUrl());
