@@ -28,6 +28,9 @@ public class Brand {
 	
 	@Column(name = "brand_country")
 	private String country;
+
+//	@Column(name = "logo")
+//	private String logo;
 	
 	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "brand")

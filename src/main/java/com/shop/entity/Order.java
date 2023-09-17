@@ -32,6 +32,15 @@ public class Order {
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
+    @Column(name = "payment_method")
+    private PaymentMethodEnum paymentMethod;
+
+    @Column(name = "payment_status")
+    private PaymentStatusEnum paymentStatus;
+
+    @Column(name = "status")
+    private OrderStatus orderStatus;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "order")
     private List<CartItem> cartItems;
 
@@ -111,6 +120,30 @@ public class Order {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public PaymentMethodEnum getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethodEnum paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public PaymentStatusEnum getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatusEnum paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
     }
 }
 
