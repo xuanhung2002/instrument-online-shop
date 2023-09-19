@@ -65,21 +65,23 @@ public class AuthController {
 	@PostMapping("register")
     public ResponseEntity<String> register(@RequestBody RegisterDTO registerDto) {
         if (accountService.existsByUsername(registerDto.getUsername())) {
-            return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Username is taken!", HttpStatus.CONFLICT);
         }
+		else {
+			User user = new User();
+			Account account = new Account();
+			account.setUsername((registerDto.getUsername()));
+			account.setPassword(passwordEncoder.encode((registerDto.getPassword())));
+			accountService.save(account);
 
-        User user = new User();
-        Account account = new Account();
-        account.setUsername((registerDto.getUsername()));
-        account.setPassword(passwordEncoder.encode((registerDto.getPassword())));
-        accountService.save(account);
-        
-        user.setAccount(account);
-        Role role = roleService.findByName("USER");
-        user.setRole(role);
+			user.setAccount(account);
+			user.setEmail(registerDto.getEmail());
+			user.setName(registerDto.getName());
+			Role role = roleService.findByName("USER");
+			user.setRole(role);
+			userService.save(user);
 
-        userService.save(user);
-
-        return new ResponseEntity<>("User registered success!", HttpStatus.OK);
+			return new ResponseEntity<>("User registered success!", HttpStatus.OK);
+		}
     }
 }
