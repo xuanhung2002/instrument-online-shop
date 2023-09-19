@@ -1,13 +1,6 @@
 package com.shop.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "account")
@@ -24,7 +17,7 @@ public class Account {
 	@Column(name = "password")
 	private String password;
 	
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "account")
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "account")
 	private User user;
 
 	public Account() {
