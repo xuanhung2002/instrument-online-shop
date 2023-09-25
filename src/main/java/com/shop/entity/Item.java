@@ -40,7 +40,6 @@ public class Item {
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "item")
 	private List<Image> images;
-	
 
 
 	public Item() {

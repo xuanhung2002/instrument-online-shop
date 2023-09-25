@@ -94,17 +94,6 @@ public class ItemController {
 		return new ResponseEntity<>(savedItem, HttpStatus.OK);
 	}
 
-//	@GetMapping("/{name}")
-//	public ResponseEntity<Item> getItemByName(@PathVariable String name){
-////		 String convertedName = StringUtil.removeVietnameseAccents(name);
-//		Optional<Item> itemOpt = itemService.findOneByName(name);
-//		if(itemOpt.isPresent()) {
-//			return new ResponseEntity<>(itemOpt.get(), HttpStatus.OK);
-//		}
-//		else {
-//			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//		}
-//	}
 
 	@GetMapping("/")
 	public ResponseEntity<List<ItemDTO>> getItemSByCategoryName(@RequestParam(value = "category", required = true) String categoryName,

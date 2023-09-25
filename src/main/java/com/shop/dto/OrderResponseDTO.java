@@ -1,58 +1,32 @@
-package com.shop.entity;
+package com.shop.dto;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
+import com.shop.entity.DetailItemOrder;
+import com.shop.entity.OrderStatus;
+import com.shop.entity.PaymentMethodEnum;
+import com.shop.entity.PaymentStatusEnum;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
-@Table(name = "customer_order")
-public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class OrderResponseDTO {
+
     private Integer id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @Column(name = "customer_name")
     private String customerName;
-
-    @Column(name = "customer_phone")
     private String customerPhone;
-
-    @Column(name = "order_date")
     private LocalDateTime orderDate;
-
-    @Column(name = "address")
     private String address;
-
-    @Column(name = "total_amount")
     private BigDecimal totalAmount;
-
-    @Column(name = "payment_method")
     private PaymentMethodEnum paymentMethod;
-
-    @Column(name = "payment_status")
     private PaymentStatusEnum paymentStatus;
-
-    @Column(name = "status")
     private OrderStatus orderStatus;
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetailItemOrder> detailItemOrders;
 
-
-    public Order() {
+    public OrderResponseDTO() {
     }
 
-    public Order(Integer id, User user, String customerName, String customerPhone, LocalDateTime orderDate, String address, BigDecimal totalAmount, PaymentMethodEnum paymentMethod, PaymentStatusEnum paymentStatus, OrderStatus orderStatus, List<DetailItemOrder> detailItemOrders) {
+    public OrderResponseDTO(Integer id, String customerName, String customerPhone, LocalDateTime orderDate, String address, BigDecimal totalAmount, PaymentMethodEnum paymentMethod, PaymentStatusEnum paymentStatus, OrderStatus orderStatus, List<DetailItemOrder> detailItemOrders) {
         this.id = id;
-        this.user = user;
         this.customerName = customerName;
         this.customerPhone = customerPhone;
         this.orderDate = orderDate;
@@ -70,14 +44,6 @@ public class Order {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getCustomerName() {
@@ -104,20 +70,20 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
     public String getAddress() {
         return address;
     }
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public PaymentMethodEnum getPaymentMethod() {
@@ -152,5 +118,3 @@ public class Order {
         this.detailItemOrders = detailItemOrders;
     }
 }
-
-

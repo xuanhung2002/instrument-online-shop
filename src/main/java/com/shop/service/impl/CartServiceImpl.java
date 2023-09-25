@@ -41,7 +41,7 @@ public class CartServiceImpl implements CartService {
 	public List<CartItemDTO> findCartItemsDTOByUsername(String username) {
 		List<CartItem> cartItems = new ArrayList<CartItem>();
 		cartItems = cartRepository.findCartItemsByUsername(username);
-		return cartItems.stream().map(c -> converter.toCartItemDTO(c)).toList();
+		return cartItems.stream().filter(c -> c.getOrder() == null).map(c -> converter.toCartItemDTO(c)).toList();
 	}
 	
 	@Override
