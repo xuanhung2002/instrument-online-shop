@@ -58,10 +58,7 @@ public class CartController {
 		if(cartService.findCartByUsername(username) == null){
 			cartService.createCartForUser(username);
 		}
-		
-//		if(cartItemRequest.getQuantity() > itemService.getItemInventoryQuantityById(cartItemRequest.getItemId())) {
-//			return new ResponseEntity<String>("Not enough quantity of this item in inventory", HttpStatus.OK);
-//		}
+
 		if(!availableQuantity(cartItemRequest.getQuantity(), itemService.getItemInventoryQuantityById(cartItemRequest.getItemId()))){
 			return new ResponseEntity<String>("Not enough quantity of this item in inventory", HttpStatus.OK);
 		}
@@ -115,16 +112,6 @@ public class CartController {
 
 		return new ResponseEntity<>("Update success", HttpStatus.OK);
 	}
-
-//	@DeleteMapping("/delete/{id}")
-//	public ResponseEntity<Void> deleteCartItemById(@PathVariable Integer id, Authentication authentication){
-//
-//		if(cartItemService.existById(id)){
-//			cartItemService.deleteById(id);
-//			return new ResponseEntity<>(HttpStatus.OK);
-//		}
-//		else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//	}
 
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Void> deleteCartItemById(@PathVariable Integer id, Authentication authentication){

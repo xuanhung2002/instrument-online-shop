@@ -1,6 +1,10 @@
 package com.shop.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "appUser")
@@ -32,6 +36,10 @@ public class User {
 	
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL,mappedBy = "user")
 	private Cart cart;
+
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+	private List<Order> orders = new ArrayList<>();
 	
 	public User() {
 	}
@@ -114,6 +122,12 @@ public class User {
 	public void setAccount(Account account) {
 		this.account = account;
 	}
-	
-	
+
+	public List<Order> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(List<Order> orders) {
+		this.orders = orders;
+	}
 }

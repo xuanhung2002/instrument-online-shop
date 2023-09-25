@@ -1,6 +1,7 @@
 package com.shop.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.shop.entity.CartItem;
 import com.shop.entity.Item;
@@ -26,9 +27,20 @@ public class CartItemServiceImpl implements CartItemService{
 		return cartItemRepository.findByCartId(cartId).stream().map(c -> converter.toCartItemDTO(c)).toList();
 	}
 
+
 	@Override
 	public Item findItemByCartItemId(Integer id) {
 		return  cartItemRepository.findItemByCartItemId(id);
+	}
+
+	@Override
+
+	public CartItem findCartItemById(Integer id){
+		Optional<CartItem> cartItemOpt = cartItemRepository.findById(id);
+		if(cartItemOpt.isPresent()){
+			return cartItemOpt.get();
+		}
+		else return null;
 	}
 
 	@Override
@@ -39,6 +51,11 @@ public class CartItemServiceImpl implements CartItemService{
 	@Override
 	public void deleteById(Integer id) {
 		cartItemRepository.deleteById(id);
+	}
+
+	@Override
+	public void save(CartItem cartItem) {
+		cartItemRepository.save(cartItem);
 	}
 
 }
