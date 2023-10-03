@@ -6,16 +6,13 @@ import java.util.Optional;
 
 import com.shop.dto.OrderRequestDTO;
 import com.shop.dto.OrderResponseDTO;
-import com.shop.entity.Order;
+import com.shop.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.shop.dto.CartItemDTO;
 import com.shop.dto.ItemDTO;
-import com.shop.entity.CartItem;
-import com.shop.entity.Image;
-import com.shop.entity.Item;
 import com.shop.service.BrandService;
 import com.shop.service.CategoryService;
 import com.shop.service.ImageService;
@@ -37,8 +34,15 @@ public class Converter {
         item.setName(itemDTO.getName());
         item.setDescription(itemDTO.getDescription());
         item.setPrice(itemDTO.getPrice());
-        item.setBrand(brandService.findOneByName(itemDTO.getBrandName()).get());
-        item.setCategory(categoryService.findOneByName(itemDTO.getCategoryName()).get());
+        Optional<Brand> brandOpt = brandService.findOneByName(itemDTO.getBrandName());
+        if(brandOpt.isPresent()){
+            item.setBrand(brandOpt.get());
+        }
+
+        Optional<Category> categoryOPT = categoryService.findOneByName(itemDTO.getCategoryName());
+        if(categoryOPT.isPresent()){
+        item.setCategory(categoryOPT.get());
+        }
         item.setInventoryQuantity(itemDTO.getInventoryQuantity());
         ;
         return item;
