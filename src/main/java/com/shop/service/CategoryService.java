@@ -9,4 +9,7 @@ public interface CategoryService {
 	List<Category> getAll();
 	Category save(Category category);
 	Optional<Category> findOneByName(String name);
+
+	boolean existedById(Integer id);
+	void deteleById(Integer id);
 }

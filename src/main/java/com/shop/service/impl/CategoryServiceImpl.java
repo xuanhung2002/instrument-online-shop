@@ -35,4 +35,15 @@ public class CategoryServiceImpl implements CategoryService{
 			return Optional.empty();
 		}
 	}
+
+	@Override
+	public boolean existedById(Integer id) {
+		Optional<Category> categoryOpt = categoryRepository.findById(id);
+        return categoryOpt.isPresent();
+    }
+
+	@Override
+	public void deteleById(Integer id) {
+		categoryRepository.deleteById(id);
+	}
 }
