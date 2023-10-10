@@ -11,4 +11,7 @@ import com.shop.entity.Role;
 public interface RoleRepository extends JpaRepository<Role, Integer>{
 	@Query("SELECT r FROM Role r WHERE r.name = :name")
 	Role findByName(@Param("name") String name);
+
+	@Query("SELECT r FROM Role r JOIN r.users u ON u.account.username = :username")
+	Role findByUsername(@Param("username") String username);
 }

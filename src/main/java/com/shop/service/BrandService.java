@@ -9,4 +9,6 @@ public interface BrandService {
 	List<Brand> getAll();
 	Brand save(Brand brand);
 	Optional<Brand> findOneByName(String brandName);
+
+	Optional<Brand> findById(Integer id);
 }

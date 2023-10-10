@@ -103,6 +103,7 @@ public class PaymentController {
                                          @RequestParam(value = "vnp_ResponseCode") String responseCode){
 
         TransactionStatusDTO transactionStatusDTO= new TransactionStatusDTO();
+        System.out.println("amount --> " + amount);
         if(responseCode.equals("00")){
             transactionStatusDTO.setStatus("OK");
             transactionStatusDTO.setMessage("Successfully");

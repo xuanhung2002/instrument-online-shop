@@ -28,10 +28,12 @@ public class BrandServiceImpl implements BrandService {
 
 	@Override
 	public Optional<Brand> findOneByName(String brandName) {
-		Optional<Brand> brandOpt = brandRepository.findFirstByName(brandName);
-		if(brandOpt.isPresent()) {
-			return brandOpt;
-		}
-		return Optional.empty();
-	}
+        return brandRepository.findFirstByName(brandName);
+    }
+
+	@Override
+	public Optional<Brand> findById(Integer id) {
+		return brandRepository.findById(id);
+    }
+
 }

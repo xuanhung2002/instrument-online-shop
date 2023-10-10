@@ -5,14 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "brand")
@@ -29,23 +22,23 @@ public class Brand {
 	@Column(name = "brand_country")
 	private String country;
 
-//	@Column(name = "logo")
-//	private String logo;
-	
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "brand")
+	private Image logo;
+
 	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "brand")
 	private List<Item> instruments = new ArrayList<Item>();
 
 	public Brand() {
 	}
-	
-	public Brand(Integer id, String name, String country) {
-		super();
+
+	public Brand(Integer id, String name, String country, Image logo, List<Item> instruments) {
 		this.id = id;
 		this.name = name;
 		this.country = country;
+		this.logo = logo;
+		this.instruments = instruments;
 	}
-	
 
 	public Integer getId() {
 		return id;
@@ -69,6 +62,13 @@ public class Brand {
 
 	public void setCountry(String country) {
 		this.country = country;
+	}
+	public Image getLogo() {
+		return logo;
+	}
+
+	public void setLogo(Image logo) {
+		this.logo = logo;
 	}
 
 	public List<Item> getInstruments() {
