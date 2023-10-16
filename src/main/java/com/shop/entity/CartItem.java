@@ -2,7 +2,15 @@ package com.shop.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "cart_item")
 public class CartItem {
@@ -27,55 +35,5 @@ public class CartItem {
 	@ManyToOne
 	@JoinColumn(name = "order_id")
 	private Order order;
-	
-	public CartItem() {
-	}
 
-	public CartItem(Integer id, Cart cart, Item item, Integer quantity) {
-		super();
-		this.id = id;
-		this.cart = cart;
-		this.item = item;
-		this.quantity = quantity;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public Cart getCart() {
-		return cart;
-	}
-
-	public void setCart(Cart cart) {
-		this.cart = cart;
-	}
-
-	public Item getItem() {
-		return item;
-	}
-
-	public void setItem(Item item) {
-		this.item = item;
-	}
-
-	public Integer getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
-	}
-
-	public Order getOrder() {
-		return order;
-	}
-
-	public void setOrder(Order order) {
-		this.order = order;
-	}
 }

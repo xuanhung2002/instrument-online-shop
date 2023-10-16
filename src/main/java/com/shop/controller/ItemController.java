@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.shop.converter.Converter;
+import com.shop.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +36,18 @@ public class ItemController {
 	@Autowired
 	FileUtils fileUtils;
 
+	@Autowired
+	BrandService brandService;
+
+	@Autowired
+	Converter converter;
+
+
 
 	@GetMapping("")
 	public ResponseEntity<List<ItemDTO>> getAll(
 			@RequestParam(name = "page", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "size", defaultValue = "15") Integer pageSize,
+			@RequestParam(name = "size", defaultValue = "2147483647" ) Integer pageSize,
 			@RequestParam(name = "sortBy", defaultValue = "name-asc") String sortBy) {
 		
 		return new ResponseEntity<>(itemService.getAll(pageNo, pageSize, sortBy), HttpStatus.OK);
@@ -53,11 +62,13 @@ public class ItemController {
 	}
 
 	@PostMapping("/add")
-	public ResponseEntity<Item> save(@RequestParam("name") String name, @RequestParam("description") String description,
-			@RequestParam("price") Integer price, @RequestParam("brandName") String brandName,
-			@RequestParam("categoryName") String categoryName,
-			@RequestParam("inventoryQuantity") Integer inventoryQuantity,
-			@RequestParam("images") List<MultipartFile> images) {
+	public ResponseEntity<Item> save(@RequestParam("name") String name,
+									 @RequestParam("description") String description,
+									@RequestParam("price") Integer price,
+									 @RequestParam("brandName") String brandName,
+									@RequestParam("categoryName") String categoryName,
+									@RequestParam("inventoryQuantity") Integer inventoryQuantity,
+									@RequestParam("images") List<MultipartFile> images) {
 
 		ItemDTO itemDTO = new ItemDTO();
 		itemDTO.setName(name);
@@ -94,6 +105,46 @@ public class ItemController {
 		return new ResponseEntity<>(savedItem, HttpStatus.OK);
 	}
 
+
+	@PutMapping("/update/{id}")
+	public ResponseEntity<?> update(@PathVariable Integer id,
+									@RequestParam("name") String name,
+									@RequestParam("description") String description,
+									@RequestParam("price") Integer price,
+									@RequestParam("brandName") String brandName,
+									@RequestParam("categoryName") String categoryName,
+									@RequestParam("inventoryQuantity") Integer inventoryQuantity,
+									@RequestParam("images") List<MultipartFile> images){
+
+		Optional<Item> oldItemOpt = itemService.findItemById(id);
+		if(oldItemOpt.isPresent()){
+			Item oldItem = oldItemOpt.get();
+			oldItem.setName(name);
+			oldItem.setDescription(description);
+			oldItem.setPrice(price);
+			oldItem.setBrand(brandService.findOneByName(brandName).get());
+			oldItem.setCategory(categoryService.findOneByName(categoryName).get());
+			oldItem.setInventoryQuantity(inventoryQuantity);
+
+			List<Image> imagesToSave = new ArrayList<Image>();
+			images.forEach(t -> {
+				try {
+					imagesToSave.add(new Image(fileUtils.uploadFile(t), oldItem));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
+			oldItem.setImages(imagesToSave);
+
+			itemService.save(converter.toItemDTO(oldItem));
+			return ResponseEntity.status(HttpStatus.OK).body(oldItem);
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+
+
+	}
 
 	@GetMapping("/")
 	public ResponseEntity<List<ItemDTO>> getItemSByCategoryName(@RequestParam(value = "category", required = true) String categoryName,

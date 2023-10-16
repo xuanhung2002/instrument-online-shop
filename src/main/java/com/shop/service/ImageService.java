@@ -9,4 +9,5 @@ public interface ImageService {
 	List<Image> findAllByItemId(Integer itemId);
 	Image save(Image image);
 	Optional<Image> findFirstByItemId(Integer itemId);
+
 }

@@ -47,7 +47,7 @@ public class WebSecurityConfig {
         .and()
         .authorizeRequests()
         .requestMatchers("/api/auth/**").permitAll()
-//				.requestMatchers(HttpMethod.POST,"/api/item/**").hasAuthority("ADMIN")
+//				.requestMatchers(HttpMethod.POST,"/api/product/**").hasAuthority("ADMIN")
         .anyRequest().permitAll()
         .and()
         .httpBasic();

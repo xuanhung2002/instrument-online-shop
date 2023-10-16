@@ -7,7 +7,6 @@ import com.shop.entity.User;
 
 
 public interface UserService{
-	UserDetails loadUserById(Integer id);
 	User save(User user);
 	User getUserByUsername(String username);
 }

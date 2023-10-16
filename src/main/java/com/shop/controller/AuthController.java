@@ -18,10 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -62,7 +59,7 @@ public class AuthController {
 		}
 	}
 
-	@PostMapping("register")
+	@PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDTO registerDto) {
         if (accountService.existsByUsername(registerDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.CONFLICT);
@@ -84,4 +81,11 @@ public class AuthController {
 			return new ResponseEntity<>("User registered success!", HttpStatus.OK);
 		}
     }
+
+	@GetMapping("/getRole")
+	public ResponseEntity<?> getRole(Authentication authentication){
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		String username = userDetails.getUsername();
+		return ResponseEntity.status(HttpStatus.OK).body(roleService.getRoleByUsername(username).getName());
+	}
 }

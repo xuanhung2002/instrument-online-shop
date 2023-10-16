@@ -2,11 +2,18 @@ package com.shop.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "customer_order")
 public class Order {
@@ -46,111 +53,6 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetailItemOrder> detailItemOrders;
 
-
-    public Order() {
-    }
-
-    public Order(Integer id, User user, String customerName, String customerPhone, LocalDateTime orderDate, String address, BigDecimal totalAmount, PaymentMethodEnum paymentMethod, PaymentStatusEnum paymentStatus, OrderStatus orderStatus, List<DetailItemOrder> detailItemOrders) {
-        this.id = id;
-        this.user = user;
-        this.customerName = customerName;
-        this.customerPhone = customerPhone;
-        this.orderDate = orderDate;
-        this.address = address;
-        this.totalAmount = totalAmount;
-        this.paymentMethod = paymentMethod;
-        this.paymentStatus = paymentStatus;
-        this.orderStatus = orderStatus;
-        this.detailItemOrders = detailItemOrders;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
-
-    public String getCustomerPhone() {
-        return customerPhone;
-    }
-
-    public void setCustomerPhone(String customerPhone) {
-        this.customerPhone = customerPhone;
-    }
-
-    public LocalDateTime getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public PaymentMethodEnum getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(PaymentMethodEnum paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public PaymentStatusEnum getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public void setPaymentStatus(PaymentStatusEnum paymentStatus) {
-        this.paymentStatus = paymentStatus;
-    }
-
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
-    }
-
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
-    }
-
-    public List<DetailItemOrder> getDetailItemOrders() {
-        return detailItemOrders;
-    }
-
-    public void setDetailItemOrders(List<DetailItemOrder> detailItemOrders) {
-        this.detailItemOrders = detailItemOrders;
-    }
 }
 
 

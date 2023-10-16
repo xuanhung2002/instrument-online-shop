@@ -2,14 +2,16 @@ package com.shop.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "image")
 public class Image {
@@ -25,46 +27,20 @@ public class Image {
 	@ManyToOne
 	@JoinColumn(name = "item_id")
 	private Item item;
-	
-	public Image() {
-	}
-	
-	public Image(Integer id, String imageUrl) {
-		this.id = id;
-		this.imageUrl = imageUrl;
-	}
-	public Image(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-	
+
+	@JsonIgnore
+	@OneToOne
+	@JoinColumn(name = "brand_id")
+	private Brand brand;
+
 	public Image(String imageUrl, Item item) {
 		super();
 		this.imageUrl = imageUrl;
 		this.item = item;
 	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(String imageUrl) {
+	public Image(String imageUrl, Brand brand) {
+		super();
 		this.imageUrl = imageUrl;
+		this.brand = brand;
 	}
-
-	public Item getItem() {
-		return item;
-	}
-
-	public void setItem(Item item) {
-		this.item = item;
-	}
-	
 }

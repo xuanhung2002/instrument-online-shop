@@ -1,8 +1,11 @@
 package com.shop.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,4 +32,5 @@ public class ImageServiceImpl implements ImageService {
 	public Optional<Image> findFirstByItemId(Integer itemId) {
 		return imageRepository.findFirstByItemId(itemId);
 	}
+	
 }

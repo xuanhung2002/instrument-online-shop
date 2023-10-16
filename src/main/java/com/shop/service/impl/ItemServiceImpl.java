@@ -49,6 +49,11 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
+	public Optional<Item> findItemById(Integer id) {
+        return itemRepository.findById(id);
+	}
+
+	@Override
 	public Item save(ItemDTO itemDTO) {
 		return itemRepository.save(converter.toItemEntity(itemDTO));
 	}

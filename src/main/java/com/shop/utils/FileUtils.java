@@ -21,4 +21,13 @@ public class FileUtils {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
         return (String) uploadResult.get("secure_url");
     }
+
+    public void deleteImageInCloudinary(String url) throws IOException {
+        int lastSlashIndex = url.lastIndexOf("/");
+        int lastDotIndex = url.lastIndexOf(".");
+        String publicId = url.substring(lastSlashIndex + 1, lastDotIndex);
+        Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        System.out.println("Kết quả xóa hình ảnh: " + result + " url: " + url);
+    }
+
 }

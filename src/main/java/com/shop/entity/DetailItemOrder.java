@@ -4,7 +4,15 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.shop.entity.Item;
 import com.shop.entity.Order;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "detail_item_order")
 public class DetailItemOrder {
@@ -24,44 +32,4 @@ public class DetailItemOrder {
     @Column(name = "quantity")
     private Integer quantity;
 
-    public DetailItemOrder() {
-    }
-
-    public DetailItemOrder(Order order, Item item, Integer quantity) {
-        this.order = order;
-        this.item = item;
-        this.quantity = quantity;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public Item getItem() {
-        return item;
-    }
-
-    public void setItem(Item item) {
-        this.item = item;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
 }

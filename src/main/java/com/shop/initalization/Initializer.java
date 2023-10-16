@@ -7,6 +7,7 @@ import com.shop.repository.AccountRepository;
 import com.shop.repository.RoleRepository;
 import com.shop.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,17 +16,20 @@ public class Initializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public Initializer(UserRepository userRepository, RoleRepository roleRepository, AccountRepository accountRepository) {
+    public Initializer(UserRepository userRepository, RoleRepository roleRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.accountRepository = accountRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) throws Exception {
         createRoleIfNotFound("ADMIN");
         createRoleIfNotFound("USER");
+        createRootUser();
     }
 
     private void createRoleIfNotFound(String roleName) {
@@ -40,15 +44,15 @@ public class Initializer implements CommandLineRunner {
 
         user.setName("ROOT ADMIN");
         user.setRole(roleRepository.findByName("ADMIN"));
+        if(!accountRepository.existsByUsername("admin")){
+            Account account = new Account();
+            account.setUser(user);
+            account.setUsername("admin");
+            account.setPassword(passwordEncoder.encode("admin12345"));
+            accountRepository.save(account);
+            user.setAccount(accountRepository.findByUsername("admin"));
+            userRepository.save(user);
+        }
 
-        Account account = new Account();
-        account.setUser(user);
-        account.setUsername("admin");
-        account.setPassword("admin");
-        accountRepository.save(account);
-
-        user.setAccount(accountRepository.findByUsername("admin"));
-
-        userRepository.save(user);
     }
 }
