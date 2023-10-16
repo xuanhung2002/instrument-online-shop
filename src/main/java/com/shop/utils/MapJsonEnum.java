@@ -8,12 +8,10 @@ public class MapJsonEnum {
         switch (paymentMethod.toLowerCase()) {
             case "cash":
                 return PaymentMethodEnum.CASH;
-            case "paypal":
-                return PaymentMethodEnum.PAYPAL;
+            case "vnpay":
+                return PaymentMethodEnum.VNPAY;
             case "momo":
                 return PaymentMethodEnum.MOMO;
-            case "stripe":
-                return PaymentMethodEnum.STRIPE;
             default:
                 throw new IllegalArgumentException("Invalid payment method: " + paymentMethod);
         }

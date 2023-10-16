@@ -5,10 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public enum PaymentMethodEnum {
     @JsonProperty("Momo")
     MOMO("Momo"),
-    @JsonProperty("Stripe")
-    STRIPE("Stripe"),
-    @JsonProperty("PayPal")
-    PAYPAL("PayPal"),
+    @JsonProperty("VNPay")
+    VNPAY("VNPay"),
     @JsonProperty("Cash")
     CASH("Cash")
     ;

@@ -15,12 +15,8 @@ public class PaymentServiceImpl implements PaymentService {
                 // Thực hiện thanh toán bằng Momo
                 // ...
                 break;
-            case STRIPE:
-                // Thực hiện thanh toán bằng Stripe
-                // ...
-                break;
-            case PAYPAL:
-                // Thực hiện thanh toán bằng PayPal
+            case VNPAY:
+                // Thực hiện thanh toán bằng VNPay
                 // ...
                 break;
             case CASH:

@@ -47,7 +47,7 @@ public class ItemController {
 	@GetMapping("")
 	public ResponseEntity<List<ItemDTO>> getAll(
 			@RequestParam(name = "page", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "size", defaultValue = "15") Integer pageSize,
+			@RequestParam(name = "size", defaultValue = "2147483647" ) Integer pageSize,
 			@RequestParam(name = "sortBy", defaultValue = "name-asc") String sortBy) {
 		
 		return new ResponseEntity<>(itemService.getAll(pageNo, pageSize, sortBy), HttpStatus.OK);
