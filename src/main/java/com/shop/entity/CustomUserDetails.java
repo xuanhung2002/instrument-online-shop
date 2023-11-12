@@ -1,4 +1,5 @@
 package com.shop.entity;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,37 +15,37 @@ import lombok.Data;
 @Data
 public class CustomUserDetails implements UserDetails {
     /**
-	 * 
-	 */
-	
-	private static final long serialVersionUID = 1L;
-	
+     *
+     */
 
-	private User user;
-	
+    private static final long serialVersionUID = 1L;
+
+
+    private User user;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 //        // Mặc định mình sẽ để tất cả là ROLE_USER. Để demo cho đơn giản.
 //        return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
-    	
-    	return Collections.singleton(new SimpleGrantedAuthority(this.getUser().getRole().getName()));
-    	
-    	
+
+        return Collections.singleton(new SimpleGrantedAuthority(this.getUser().getRole().getName()));
+
+
     }
-    
-	public CustomUserDetails(User user) {
-		this.user = user;
-	}
-	
+
+    public CustomUserDetails(User user) {
+        this.user = user;
+    }
+
     public User getUser() {
-		return user;
-	}
+        return user;
+    }
 
-	public void setUser(User user) {
-		this.user = user;
-	}
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-	@Override
+    @Override
     public String getPassword() {
         return user.getAccount().getPassword();
     }
@@ -53,6 +54,7 @@ public class CustomUserDetails implements UserDetails {
     public String getUsername() {
         return user.getAccount().getUsername();
     }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

@@ -10,16 +10,16 @@ import com.shop.service.AccountService;
 @Service
 public class AccountServiceImpl implements AccountService {
 
-	@Autowired
-	AccountRepository accountRepository;
+    @Autowired
+    AccountRepository accountRepository;
 
-	@Override
-	public boolean existsByUsername(String username) {
-		return accountRepository.existsByUsername(username);
-	}
-	
-	@Override
-	public Account save(Account account) {
-		return accountRepository.save(account);
-	}
+    @Override
+    public boolean existsByUsername(String username) {
+        return accountRepository.existsByUsername(username);
+    }
+
+    @Override
+    public Account save(Account account) {
+        return accountRepository.save(account);
+    }
 }

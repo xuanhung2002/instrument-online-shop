@@ -1,21 +1,20 @@
 package com.shop.converter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import com.shop.dto.OrderRequestDTO;
+import com.shop.dto.CartItemDTO;
+import com.shop.dto.ItemDTO;
 import com.shop.dto.OrderResponseDTO;
-import com.shop.entity.*;
+import com.shop.entity.CartItem;
+import com.shop.entity.Image;
+import com.shop.entity.Item;
+import com.shop.entity.Order;
+import com.shop.service.BrandService;
+import com.shop.service.CategoryService;
+import com.shop.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.shop.dto.CartItemDTO;
-import com.shop.dto.ItemDTO;
-import com.shop.service.BrandService;
-import com.shop.service.CategoryService;
-import com.shop.service.ImageService;
+import java.util.Optional;
 
 @Component
 @Lazy
@@ -28,25 +27,21 @@ public class Converter {
     ImageService imageService;
 
 
-    public Item toItemEntity(ItemDTO itemDTO) {
-        Item item = new Item();
-        item.setId(itemDTO.getId());
-        item.setName(itemDTO.getName());
-        item.setDescription(itemDTO.getDescription());
-        item.setPrice(itemDTO.getPrice());
-        Optional<Brand> brandOpt = brandService.findOneByName(itemDTO.getBrandName());
-        if(brandOpt.isPresent()){
-            item.setBrand(brandOpt.get());
-        }
-
-        Optional<Category> categoryOPT = categoryService.findOneByName(itemDTO.getCategoryName());
-        if(categoryOPT.isPresent()){
-        item.setCategory(categoryOPT.get());
-        }
-        item.setInventoryQuantity(itemDTO.getInventoryQuantity());
-        ;
-        return item;
-    }
+//    public Item toItemEntity(ItemDTO itemDTO) {
+//        Item item = new Item();
+//        item.setId(itemDTO.getId());
+//        item.setName(itemDTO.getName());
+//        item.setDescription(itemDTO.getDescription());
+//        item.setPrice(itemDTO.getPrice());
+//        Optional<Brand> brandOpt = brandService.getBrandByBrandName(itemDTO.getBrandName());
+//      brandOpt.ifPresent(item::setBrand);
+//
+//        Optional<Category> categoryOPT = categoryService.getCategoryByCategoryName(itemDTO.getCategoryName());
+//      categoryOPT.ifPresent(item::setCategory);
+//        item.setInventoryQuantity(itemDTO.getInventoryQuantity());
+//        ;
+//        return item;
+//    }
 
     public ItemDTO toItemDTO(Item item) {
         ItemDTO itemDTO = new ItemDTO();
@@ -56,7 +51,7 @@ public class Converter {
         itemDTO.setDescription(item.getDescription());
         itemDTO.setBrandName(item.getBrand().getName());
         itemDTO.setCategoryName(item.getCategory().getName());
-        itemDTO.setImages(imageService.findAllByItemId(item.getId()));
+        itemDTO.setImages(imageService.getAllByItemId(item.getId()));
         itemDTO.setInventoryQuantity(item.getInventoryQuantity());
         return itemDTO;
     }
@@ -66,7 +61,7 @@ public class Converter {
         CartItemDTO cartItemDTO = new CartItemDTO();
         cartItemDTO.setId(cartItem.getId());
         cartItemDTO.setItemId(cartItem.getId());
-        Optional<Image> imageOptional = imageService.findFirstByItemId(cartItem.getItem().getId());
+        Optional<Image> imageOptional = imageService.getFirstByItemId(cartItem.getItem().getId());
         if (imageOptional.isPresent()) {
             cartItemDTO.setItemImage(imageOptional.get().getImageUrl());
         } else {
@@ -74,7 +69,7 @@ public class Converter {
             cartItemDTO.setItemImage(null);
         }
 
-//		cartItemDTO.setItemImage(imageService.findFirstByItemId(cartItem.getItem().getId())
+//		cartItemDTO.setItemImage(imageService.getFirstByItemId(cartItem.getItem().getId())
 //																.get()
 //																.getImageUrl());
         cartItemDTO.setNameItem(cartItem.getItem().getName());
@@ -92,7 +87,7 @@ public class Converter {
         orderResponseDTO.setId(order.getId());
         orderResponseDTO.setCustomerName(order.getCustomerName());
         orderResponseDTO.setCustomerPhone(order.getCustomerPhone());
-        orderResponseDTO.setAddress(orderResponseDTO.getAddress());
+        orderResponseDTO.setAddress(order.getAddress());
         orderResponseDTO.setOrderDate(order.getOrderDate());
         orderResponseDTO.setTotalAmount(order.getTotalAmount());
         orderResponseDTO.setPaymentMethod(order.getPaymentMethod());

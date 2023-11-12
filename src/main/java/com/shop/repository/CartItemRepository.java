@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 import com.shop.entity.CartItem;
 
 @Repository
-public interface CartItemRepository extends JpaRepository<CartItem, Integer>{
-	List<CartItem> findByCartId(Integer cartId);
+public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
+    List<CartItem> findByCartId(Integer cartId);
 
-	@Query("SELECT ci.item FROM CartItem ci WHERE ci.id = :id")
-	Item findItemByCartItemId(@Param("id") Integer id);
-	
+    @Query("SELECT ci.item FROM CartItem ci WHERE ci.id = :id")
+    Item getItemByCartItemId(@Param("id") Integer id);
+
 } 

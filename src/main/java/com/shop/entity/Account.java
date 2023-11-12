@@ -13,19 +13,19 @@ import lombok.Setter;
 @Entity
 @Table(name = "account")
 public class Account {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "account_id")
-	private Integer id;
-	
-	@Column(name = "username")
-	private String username;
-	
-	@Column(name = "password")
-	private String password;
-	
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "account")
-	private User user;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "account_id")
+    private Integer id;
+
+    @Column(name = "username")
+    private String username;
+
+    @Column(name = "password")
+    private String password;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "account")
+    private User user;
 
 }

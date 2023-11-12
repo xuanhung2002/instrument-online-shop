@@ -4,10 +4,16 @@ import java.util.List;
 import java.util.Optional;
 
 import com.shop.entity.Image;
+import com.shop.entity.Item;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageService {
-	List<Image> findAllByItemId(Integer itemId);
+	List<Image> getAllByItemId(Integer itemId);
 	Image save(Image image);
-	Optional<Image> findFirstByItemId(Integer itemId);
+	Optional<Image> getFirstByItemId(Integer itemId);
+	void delete(Image image);
+	List<Image> uploadImages(List<MultipartFile> images, Item item);
+
+	void deleteAndSaveImages(List<MultipartFile> images, Item oldItem);
 
 }

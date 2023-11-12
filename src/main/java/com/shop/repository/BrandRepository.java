@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.shop.entity.Brand;
 
 @Repository
-public interface BrandRepository extends JpaRepository<Brand, Integer>{
-	Optional<Brand> findFirstByName(String name);
+public interface BrandRepository extends JpaRepository<Brand, Integer> {
+    Optional<Brand> findFirstByName(String name);
 }

@@ -23,69 +23,68 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-	private final AuthenticationManager authenticationManager;
-	private final AccountService accountService;
-	private final PasswordEncoder passwordEncoder;
-	private final RoleService roleService;
-	private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final AccountService accountService;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleService roleService;
+    private final UserService userService;
 
-	@Autowired
-	public AuthController(AuthenticationManager authenticationManager,
-						  AccountService accountService,
-						  PasswordEncoder passwordEncoder,
-						  RoleService roleService,
-						  UserService userService) {
+    @Autowired
+    public AuthController(AuthenticationManager authenticationManager,
+                          AccountService accountService,
+                          PasswordEncoder passwordEncoder,
+                          RoleService roleService,
+                          UserService userService) {
 
-		this.authenticationManager = authenticationManager;
-		this.accountService = accountService;
-		this.passwordEncoder = passwordEncoder;
-		this.roleService = roleService;
-		this.userService = userService;
-	}
+        this.authenticationManager = authenticationManager;
+        this.accountService = accountService;
+        this.passwordEncoder = passwordEncoder;
+        this.roleService = roleService;
+        this.userService = userService;
+    }
 
-	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginDTO loginDto) {
-		try {
-			Authentication authentication = authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDto) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
 
-			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-			String token = JwtTokenProvider.generateToken(userDetails.getUsername());
+            String token = JwtTokenProvider.generateToken(userDetails.getUsername());
 
-			return ResponseEntity.ok(new AuthResponseDTO(token));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-		}
-	}
+            return ResponseEntity.ok(new AuthResponseDTO(token));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+    }
 
-	@PostMapping("/register")
+    @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDTO registerDto) {
         if (accountService.existsByUsername(registerDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.CONFLICT);
+        } else {
+            User user = new User();
+            Account account = new Account();
+            account.setUsername((registerDto.getUsername()));
+            account.setPassword(passwordEncoder.encode((registerDto.getPassword())));
+            accountService.save(account);
+
+            user.setAccount(account);
+            user.setEmail(registerDto.getEmail());
+            user.setName(registerDto.getName());
+            Role role = roleService.getRoleByName("USER");
+            user.setRole(role);
+            userService.save(user);
+
+            return new ResponseEntity<>("User registered success!", HttpStatus.OK);
         }
-		else {
-			User user = new User();
-			Account account = new Account();
-			account.setUsername((registerDto.getUsername()));
-			account.setPassword(passwordEncoder.encode((registerDto.getPassword())));
-			accountService.save(account);
-
-			user.setAccount(account);
-			user.setEmail(registerDto.getEmail());
-			user.setName(registerDto.getName());
-			Role role = roleService.findByName("USER");
-			user.setRole(role);
-			userService.save(user);
-
-			return new ResponseEntity<>("User registered success!", HttpStatus.OK);
-		}
     }
 
-	@GetMapping("/getRole")
-	public ResponseEntity<?> getRole(Authentication authentication){
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		String username = userDetails.getUsername();
-		return ResponseEntity.status(HttpStatus.OK).body(roleService.getRoleByUsername(username).getName());
-	}
+    @GetMapping("/getRole")
+    public ResponseEntity<?> getRole(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
+        return ResponseEntity.status(HttpStatus.OK).body(roleService.getRoleByUsername(username).getName());
+    }
 }

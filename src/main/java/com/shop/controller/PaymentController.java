@@ -2,11 +2,13 @@ package com.shop.controller;
 
 import com.shop.config.VNPayConfig;
 import com.shop.dto.PaymentResponseDTO;
-import com.shop.dto.TransactionStatusDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -38,7 +40,7 @@ public class PaymentController {
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(amount*100));
+        vnp_Params.put("vnp_Amount", String.valueOf(amount * 100));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_BankCode", "NCB");
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
@@ -96,19 +98,58 @@ public class PaymentController {
     }
 
 
-    @GetMapping("/payment-infor")
-    public ResponseEntity<?> transaction(@RequestParam(value = "vnp_Amount") String amount,
-                                         @RequestParam(value = "vnp_BankCode") String bankCode,
-                                         @RequestParam(value = "vnp_OrderInfo") String order,
-                                         @RequestParam(value = "vnp_ResponseCode") String responseCode){
-
-        TransactionStatusDTO transactionStatusDTO= new TransactionStatusDTO();
-        System.out.println("amount --> " + amount);
-        if(responseCode.equals("00")){
-            transactionStatusDTO.setStatus("OK");
-            transactionStatusDTO.setMessage("Successfully");
-            transactionStatusDTO.setData("");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(transactionStatusDTO);
-    }
+//    @PostMapping("/vnpay-notify")
+//    public ResponseEntity<String> processVnPayResponse(@RequestBody Map<String, String> requestBody, HttpServletRequest request) throws UnsupportedEncodingException {
+//        // Điều này giả sử bạn đã cấu hình URL IPN từ VnPay để trỏ vào "/vnpay-notify" trong ứng dụng Spring Boot của bạn.
+//
+//        // Begin process return from VNPAY
+//        Map<String, String> fields = new HashMap<>();
+//        Enumeration<String> params = request.getParameterNames();
+//        while (params.hasMoreElements()) {
+//            String fieldName = params.nextElement();
+//            String fieldValue = request.getParameter(fieldName);
+//            fields.put(fieldName, fieldValue);
+//        }
+//
+//        String vnpSecureHash = requestBody.get("vnp_SecureHash");
+//        if (fields.containsKey("vnp_SecureHashType")) {
+//            fields.remove("vnp_SecureHashType");
+//        }
+//        if (fields.containsKey("vnp_SecureHash")) {
+//            fields.remove("vnp_SecureHash");
+//        }
+//        String signValue = VNPayConfig.hashAllFields(fields); // Implement this method to generate the secure hash.
+//
+//        if (signValue.equals(vnpSecureHash)) {
+//            boolean checkOrderId = true; // Giá trị của vnp_TxnRef tồn tại trong CSDL của merchant
+//            boolean checkAmount = true; // Kiểm tra số tiền thanh toán do VNPAY phản hồi(vnp_Amount/100) với số tiền của đơn hàng merchant tạo thanh toán: giả sử số tiền kiểm tra là đúng.
+//            boolean checkOrderStatus = true; // Giả sử PaymnentStatus = 0 (pending) là trạng thái thanh toán của giao dịch khởi tạo chưa có IPN.
+//
+//            if (checkOrderId) {
+//                if (checkAmount) {
+//                    if (checkOrderStatus) {
+//                        if ("00".equals(requestBody.get("vnp_ResponseCode"))) {
+//                            // Xử lý/Cập nhật tình trạng giao dịch thanh toán "Thành công"
+//                            return ResponseEntity.ok("{\"RspCode\":\"00\",\"Message\":\"Confirm Success\"}");
+//                        } else {
+//                            // Xử lý/Cập nhật tình trạng giao dịch thanh toán "Không thành công"
+//                            return ResponseEntity.ok("{\"RspCode\":\"00\",\"Message\":\"Confirm Success\"}");
+//                        }
+//                    } else {
+//                        // Trạng thái giao dịch đã được cập nhật trước đó
+//                        return ResponseEntity.ok("{\"RspCode\":\"02\",\"Message\":\"Order already confirmed\"}");
+//                    }
+//                } else {
+//                    // Số tiền không trùng khớp
+//                    return ResponseEntity.ok("{\"RspCode\":\"04\",\"Message\":\"Invalid Amount\"}");
+//                }
+//            } else {
+//                // Mã giao dịch không tồn tại
+//                return ResponseEntity.ok("{\"RspCode\":\"01\",\"Message\":\"Order not Found\"}");
+//            }
+//        } else {
+//            // Sai checksum
+//            return ResponseEntity.ok("{\"RspCode\":\"97\",\"Message\":\"Invalid Checksum\"}");
+//        }
+//    }
 }
