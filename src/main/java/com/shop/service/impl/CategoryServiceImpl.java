@@ -22,11 +22,16 @@ public class CategoryServiceImpl implements CategoryService{
 	}
 	@Override
 	public Category save(Category category) {
-		return categoryRepository.save(category);
+		if(categoryRepository.existsByName(category.getName())){
+			return null;
+		}
+		else {
+			return categoryRepository.save(category);
+		}
 	}
 	
 	@Override
-	public Optional<Category> findOneByName(String name) {
+	public Optional<Category> getCategoryByCategoryName(String name) {
 		Optional<Category> categoryOpt = categoryRepository.findFirstByName(name);
 		if(categoryOpt.isPresent()) {
 			return categoryOpt;

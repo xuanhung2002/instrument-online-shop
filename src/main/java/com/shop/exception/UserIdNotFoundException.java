@@ -1,4 +1,4 @@
-package exception;
+package com.shop.exception;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 

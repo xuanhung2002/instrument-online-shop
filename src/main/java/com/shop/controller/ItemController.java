@@ -1,173 +1,106 @@
 package com.shop.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import com.shop.converter.Converter;
-import com.shop.service.BrandService;
+import com.shop.dto.ItemRequestDTO;
+import com.shop.entity.Item;
+import com.shop.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.shop.dto.ItemDTO;
-import com.shop.entity.Category;
-import com.shop.entity.Image;
-import com.shop.entity.Item;
-import com.shop.service.CategoryService;
-import com.shop.service.ImageService;
-import com.shop.service.ItemService;
-import com.shop.utils.FileUtils;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/item")
 public class ItemController {
 
-	@Autowired
-	ItemService itemService;
-	@Autowired
-	CategoryService categoryService;
-	@Autowired
-	ImageService imageService;
-	@Autowired
-	FileUtils fileUtils;
+    @Autowired
+    ItemService itemService;
 
-	@Autowired
-	BrandService brandService;
-
-	@Autowired
-	Converter converter;
+    @Autowired
+    Converter converter;
 
 
+    @GetMapping("")
+    public ResponseEntity<?> getAll(
+            @RequestParam(name = "page", defaultValue = "0") Integer pageNo,
+            @RequestParam(name = "size", defaultValue = "2147483647") Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = "default") String sortBy) {
 
-	@GetMapping("")
-	public ResponseEntity<List<ItemDTO>> getAll(
-			@RequestParam(name = "page", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "size", defaultValue = "2147483647" ) Integer pageSize,
-			@RequestParam(name = "sortBy", defaultValue = "name-asc") String sortBy) {
-		
-		return new ResponseEntity<>(itemService.getAll(pageNo, pageSize, sortBy), HttpStatus.OK);
-	}
+        return new ResponseEntity<>(itemService.getAll(pageNo, pageSize, sortBy).stream().map(converter::toItemDTO),
+                HttpStatus.OK);
+    }
 
-	@GetMapping("/{id}")
-	public ResponseEntity<ItemDTO> getItemById(@PathVariable Integer id){
-		if(itemService.getItemById(id) == null){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(itemService.getItemById(id), HttpStatus.OK);
-	}
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getItemById(@PathVariable Integer id) {
+        if (itemService.getItemById(id) == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("This item is not existed");
+        }
+        return new ResponseEntity<>(converter.toItemDTO(itemService.getItemById(id)), HttpStatus.OK);
+    }
 
-	@PostMapping("/add")
-	public ResponseEntity<Item> save(@RequestParam("name") String name,
-									 @RequestParam("description") String description,
-									@RequestParam("price") Integer price,
-									 @RequestParam("brandName") String brandName,
-									@RequestParam("categoryName") String categoryName,
-									@RequestParam("inventoryQuantity") Integer inventoryQuantity,
-									@RequestParam("images") List<MultipartFile> images) {
+    @GetMapping("/search")
+    public ResponseEntity<?> searchItem(@RequestParam("searchKey") String searchKey){
+        if(itemService.searchItemsByName(searchKey) != null){
+            return ResponseEntity.status(HttpStatus.OK).body(itemService.searchItemsByName(searchKey));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No have item with this search key");
+        }
+    }
+    @PostMapping("/add")
+    public ResponseEntity<?> save(@ModelAttribute ItemRequestDTO itemRequestDTO) {
+        try {
+            Item savedItem = itemService.addNewItem(itemRequestDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(converter.toItemDTO(savedItem));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
 
-		ItemDTO itemDTO = new ItemDTO();
-		itemDTO.setName(name);
-		itemDTO.setDescription(description);
-		itemDTO.setPrice(price);
-		itemDTO.setBrandName(brandName);
-		itemDTO.setCategoryName(categoryName);
-		itemDTO.setInventoryQuantity(inventoryQuantity);
-
-		Item savedItem = itemService.save(itemDTO);
-		
-		List<Image> imagesToSave = new ArrayList<Image>();
-		
-		images.forEach(t -> {
-			try {
-				imagesToSave.add(new Image(fileUtils.uploadFile(t), savedItem));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-		
-		//add full element to return responseEntity
-		if(savedItem.getImages() == null) {
-			savedItem.setImages(imagesToSave);
-		}
-		else {
-			savedItem.getImages().addAll(imagesToSave);
-		}
-
-		imagesToSave.forEach(i -> {
-			imageService.save(i);
-		});
-
-		return new ResponseEntity<>(savedItem, HttpStatus.OK);
-	}
+    }
 
 
-	@PutMapping("/update/{id}")
-	public ResponseEntity<?> update(@PathVariable Integer id,
-									@RequestParam("name") String name,
-									@RequestParam("description") String description,
-									@RequestParam("price") Integer price,
-									@RequestParam("brandName") String brandName,
-									@RequestParam("categoryName") String categoryName,
-									@RequestParam("inventoryQuantity") Integer inventoryQuantity,
-									@RequestParam("images") List<MultipartFile> images){
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable Integer id,
+                                    @ModelAttribute ItemRequestDTO itemRequestDTO) {
+        try {
+            Item updatedItem = itemService.updateItem(id, itemRequestDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(converter.toItemDTO(updatedItem));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
 
-		Optional<Item> oldItemOpt = itemService.findItemById(id);
-		if(oldItemOpt.isPresent()){
-			Item oldItem = oldItemOpt.get();
-			oldItem.setName(name);
-			oldItem.setDescription(description);
-			oldItem.setPrice(price);
-			oldItem.setBrand(brandService.findOneByName(brandName).get());
-			oldItem.setCategory(categoryService.findOneByName(categoryName).get());
-			oldItem.setInventoryQuantity(inventoryQuantity);
+    }
 
-			List<Image> imagesToSave = new ArrayList<Image>();
-			images.forEach(t -> {
-				try {
-					imagesToSave.add(new Image(fileUtils.uploadFile(t), oldItem));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-			oldItem.setImages(imagesToSave);
+    @GetMapping("/")
+    public ResponseEntity<?> getItemSByCategoryName(@RequestParam(value = "categoryName", required = true) String categoryName,
+                                                    @RequestParam(name = "page", defaultValue = "0") Integer pageNo,
+                                                    @RequestParam(name = "size", defaultValue = "5") Integer pageSize,
+                                                    @RequestParam(name = "sortBy", defaultValue = "name-asc") String sortBy) {
 
-			itemService.save(converter.toItemDTO(oldItem));
-			return ResponseEntity.status(HttpStatus.OK).body(oldItem);
-		}
-		else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+        try {
+            List<Item> items = itemService.getItemsByCategory(categoryName, pageNo, pageSize,sortBy);
+            return ResponseEntity.status(HttpStatus.OK).body(items);
+        }
+        catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteItemById(@PathVariable Integer id) {
+        if (itemService.existedById(id)) {
+            itemService.deleteItemById(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Delete success");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("This item is not existed");
+    }
 
 
-	}
-
-	@GetMapping("/")
-	public ResponseEntity<List<ItemDTO>> getItemSByCategoryName(@RequestParam(value = "category", required = true) String categoryName,
-			@RequestParam(name = "page", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "size", defaultValue = "5") Integer pageSize,
-			@RequestParam(name = "sortBy", defaultValue = "name-asc") String sortBy) {
-		
-		
-		Optional<Category> categoryOpt = categoryService.findOneByName(categoryName);
-		if (categoryOpt.isPresent()) {
-			List<ItemDTO> items = new ArrayList<ItemDTO>(itemService.findByCategory(categoryOpt.get(), pageNo, pageSize, sortBy));
-			return new ResponseEntity<>(items, HttpStatus.OK);
-		}
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	}
-
-	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<Void> deleteItemById(@PathVariable Integer id){
-		if(itemService.existedById(id)){
-			itemService.deleteItemById(id);
-			return new ResponseEntity<>(HttpStatus.OK);
-		}
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	}
 
 }

@@ -39,12 +39,13 @@ public class Initializer implements CommandLineRunner {
             roleRepository.save(role);
         }
     }
+
     private void createRootUser() {
         User user = new User();
 
         user.setName("ROOT ADMIN");
         user.setRole(roleRepository.findByName("ADMIN"));
-        if(!accountRepository.existsByUsername("admin")){
+        if (!accountRepository.existsByUsername("admin")) {
             Account account = new Account();
             account.setUser(user);
             account.setUsername("admin");

@@ -1,92 +1,175 @@
 package com.shop.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.shop.converter.Converter;
+import com.shop.dto.ItemRequestDTO;
+import com.shop.entity.Brand;
+import com.shop.entity.Category;
+import com.shop.entity.Image;
+import com.shop.entity.Item;
+import com.shop.repository.ItemRepository;
+import com.shop.service.BrandService;
+import com.shop.service.CategoryService;
+import com.shop.service.ImageService;
+import com.shop.service.ItemService;
+import com.shop.utils.FileUtils;
+import com.shop.utils.PageableUtils;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.shop.converter.Converter;
-import com.shop.dto.ItemDTO;
-import com.shop.entity.Category;
-import com.shop.entity.Item;
-import com.shop.repository.ItemRepository;
-import com.shop.service.ItemService;
-import com.shop.utils.PageableUtils;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemServiceImpl implements ItemService {
 
-	@Autowired
-	ItemRepository itemRepository;
-	@Autowired
-	Converter converter;
+  @Autowired
+  ItemRepository itemRepository;
+  @Autowired
+  Converter converter;
 
-	@Override
-	public List<ItemDTO> getAll(Integer pageNo, Integer pageSize, String sortBy) {
-		
-		Pageable pageable = PageableUtils.getPageable(pageNo, pageSize, sortBy);
+  @Autowired
+  BrandService brandService;
 
-		Page<Item> pageResult = itemRepository.findAll(pageable);
-		if(pageResult.getContent() != null) {
-			return pageResult.getContent().stream().map(t -> converter.toItemDTO(t)).collect(Collectors.toList());
-		}
-		else {
-			return new ArrayList<ItemDTO>();
-		}
-//		return itemRepository.findAll()
-//				.stream().map(t -> converter.toItemDTO(t)).toList();
-	}
+  @Autowired
+  ImageService imageService;
 
-	@Override
-	public ItemDTO getItemById(Integer id) {
-	Optional<Item> itemOpt = itemRepository.findById(id);
-        return itemOpt.map(item -> converter.toItemDTO(item)).orElse(null);
-	}
+  @Autowired
+  FileUtils fileUtils;
 
-	@Override
-	public Optional<Item> findItemById(Integer id) {
-        return itemRepository.findById(id);
-	}
+  @Autowired
+  CategoryService categoryService;
 
-	@Override
-	public Item save(ItemDTO itemDTO) {
-		return itemRepository.save(converter.toItemEntity(itemDTO));
-	}
+  @Override
+  public List<Item> getAll(Integer pageNo, Integer pageSize, String sortBy) {
 
-	@Override
-	public Optional<Item> findOneByName(String name) {
-		Optional<Item> itemOpt = itemRepository.findFirstByName(name);
-		if (itemOpt.isPresent()) {
-			return itemOpt;
-		} else {
-			return Optional.empty();
-		}
-	}
-	
-	@Override
-	public List<ItemDTO> findByCategory(Category category, Integer pageNo, Integer pageSize, String sortBy) {
-		Pageable pageable = PageableUtils.getPageable(pageNo, pageSize, sortBy); 		
-		List<Item> items = itemRepository.findByCategory(category, pageable);
-		return items.stream().map(t -> converter.toItemDTO(t)).toList();
-	}
-	
-	@Override
-	public Integer getItemInventoryQuantityById(Integer idItem) {
-		return itemRepository.getItemInventoryQuantityById(idItem);
-	}
+    Pageable pageable = PageableUtils.getPageable(pageNo, pageSize, sortBy);
 
-	@Override
-	public void deleteItemById(Integer id) {
-		itemRepository.deleteById(id);
-	}
+    Page<Item> pageResult = itemRepository.findAll(pageable);
+    if (pageResult.getContent() != null) {
+      return pageResult.getContent().stream().collect(Collectors.toList());
+    } else {
+      return null;
+    }
+  }
 
-	@Override
-	public boolean existedById(Integer id) {
-		return itemRepository.existsById(id);
-	}
+  @Override
+  public Item getItemById(Integer id) {
+    Optional<Item> itemOpt = itemRepository.findById(id);
+    return itemOpt.orElse(null);
+  }
+
+  @Override
+  public Optional<Item> findItemById(Integer id) {
+    return itemRepository.findById(id);
+  }
+
+  @Override
+  public Item save(Item item) {
+    return itemRepository.save(item);
+  }
+
+  @Override
+  public Optional<Item> getItemByBrandName(String name) {
+    return Optional.empty();
+  }
+
+
+  @Override
+  public List<Item> getItemsByCategory(String categoryName, Integer pageNo, Integer pageSize, String sortBy) {
+    Pageable pageable = PageableUtils.getPageable(pageNo, pageSize, sortBy);
+    Optional<Category> categoryOpt = categoryService.getCategoryByCategoryName(categoryName);
+    if (categoryOpt.isPresent()) {
+          return itemRepository.getItemsByCategory(categoryOpt.get(), pageable);
+    }
+    else {
+      throw new EntityNotFoundException("This category is not existed");
+    }
+  }
+
+  @Override
+  public Integer getItemInventoryQuantityById(Integer idItem) {
+    return itemRepository.getItemInventoryQuantityById(idItem);
+  }
+
+  @Override
+  public void deleteItemById(Integer id) {
+    itemRepository.deleteById(id);
+  }
+
+  @Override
+  public boolean existedById(Integer id) {
+    return itemRepository.existsById(id);
+  }
+
+  @Override
+  public List<Item> searchItemsByName(String searchKey) {
+    List<Item> items = itemRepository.searchItems(searchKey);
+    if (items.isEmpty()) {
+      return null;
+    } else {
+      return items;
+    }
+  }
+
+  @Transactional
+  @Override
+  public Item addNewItem(ItemRequestDTO itemRequestDTO) {
+    Brand brand = getBrand(itemRequestDTO.getBrandName());
+    Category category = getCategory(itemRequestDTO.getCategoryName());
+
+    Item item = new Item();
+    item.setName(itemRequestDTO.getName());
+    item.setDescription(itemRequestDTO.getDescription());
+    item.setPrice(itemRequestDTO.getPrice());
+    item.setBrand(brand);
+    item.setCategory(category);
+    item.setInventoryQuantity(itemRequestDTO.getInventoryQuantity());
+    Item savedItem = itemRepository.save(item);
+
+    List<Image> imagesToSave = imageService.uploadImages(itemRequestDTO.getImages(), item);
+
+    imagesToSave.forEach(i -> {
+      imageService.save(i);
+    });
+
+    return savedItem;
+  }
+
+  @Transactional
+  @Override
+  public Item updateItem(Integer id,ItemRequestDTO itemRequestDTO) {
+    Brand brand = getBrand(itemRequestDTO.getBrandName());
+    Category category = getCategory(itemRequestDTO.getCategoryName());
+
+    Optional<Item> oldItemOpt = findItemById(id);
+    if (oldItemOpt.isPresent()) {
+      Item oldItem = oldItemOpt.get();
+      oldItem.setName(itemRequestDTO.getName());
+      oldItem.setDescription(itemRequestDTO.getDescription());
+      oldItem.setPrice(itemRequestDTO.getPrice());
+      oldItem.setBrand(brand);
+      oldItem.setCategory(category);
+      oldItem.setInventoryQuantity(itemRequestDTO.getInventoryQuantity());
+
+      imageService.deleteAndSaveImages(itemRequestDTO.getImages(), oldItem);
+      return itemRepository.save(oldItem);
+    } else {
+      throw new EntityNotFoundException("This item is not existed");
+    }
+  }
+
+  private Brand getBrand(String brandName) {
+    return brandService.getBrandByBrandName(brandName)
+            .orElseThrow(() -> new EntityNotFoundException("This brand is not existed"));
+  }
+
+  private Category getCategory(String categoryName) {
+    return categoryService.getCategoryByCategoryName(categoryName)
+            .orElseThrow(() -> new EntityNotFoundException("This category is not existed"));
+  }
 }

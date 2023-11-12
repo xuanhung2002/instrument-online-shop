@@ -9,7 +9,8 @@ import org.springframework.stereotype.Repository;
 import com.shop.entity.Image;
 
 @Repository
-public interface ImageRepository extends JpaRepository<Image, Integer>{
-	List<Image> findByItemId(Integer itemId);
-	Optional<Image> findFirstByItemId(Integer itemId);
+public interface ImageRepository extends JpaRepository<Image, Integer> {
+    List<Image> findByItemId(Integer itemId);
+
+    Optional<Image> getFirstByItemId(Integer itemId);
 }

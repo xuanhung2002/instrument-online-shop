@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import com.shop.entity.Category;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Integer>{
-	Optional<Category> findFirstByName(String name);
+public interface CategoryRepository extends JpaRepository<Category, Integer> {
+    Optional<Category> findFirstByName(String name);
+
+    boolean existsByName(String name);
 }

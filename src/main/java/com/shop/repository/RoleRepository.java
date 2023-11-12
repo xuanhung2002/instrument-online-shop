@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 import com.shop.entity.Role;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Integer>{
-	@Query("SELECT r FROM Role r WHERE r.name = :name")
-	Role findByName(@Param("name") String name);
+public interface RoleRepository extends JpaRepository<Role, Integer> {
+    @Query("SELECT r FROM Role r WHERE r.name = :name")
+    Role findByName(@Param("name") String name);
 
-	@Query("SELECT r FROM Role r JOIN r.users u ON u.account.username = :username")
-	Role findByUsername(@Param("username") String username);
+    @Query("SELECT r FROM Role r JOIN r.users u ON u.account.username = :username")
+    Role findByUsername(@Param("username") String username);
 }

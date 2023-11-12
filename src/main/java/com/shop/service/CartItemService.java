@@ -9,8 +9,8 @@ import com.shop.entity.Item;
 public interface CartItemService {
 	List<CartItemDTO> findCartItemsByCartId(Integer cartId);
 
-	Item findItemByCartItemId(Integer id);
-	CartItem findCartItemById(Integer id);
+	Item getItemByCartItemId(Integer id);
+	CartItem getCartItemById(Integer id);
 
 	boolean existById(Integer id);
 	void deleteById(Integer id);

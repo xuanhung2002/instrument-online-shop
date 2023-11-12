@@ -1,10 +1,12 @@
 package com.shop.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.shop.converter.Converter;
+import com.shop.dto.CartItemDTO;
+import com.shop.dto.CartItemRequest;
+import com.shop.dto.UpdateCartItemRequest;
+import com.shop.service.CartItemService;
+import com.shop.service.CartService;
+import com.shop.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,125 +15,92 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import com.shop.dto.CartItemDTO;
-import com.shop.dto.NewCartItemRequest;
-import com.shop.dto.UpdateCartItemRequest;
-import com.shop.entity.CartItem;
-import com.shop.service.CartItemService;
-import com.shop.service.CartService;
-import com.shop.service.ItemService;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/api/cart")
 public class CartController {
 
-	private final CartItemService cartItemService;
-	private final CartService cartService;
-	private final ItemService itemService;
-	@Autowired
-	public CartController(CartItemService cartItemService, CartService cartService, ItemService itemService) {
-		this.cartItemService = cartItemService;
-		this.cartService = cartService;
-		this.itemService = itemService;
-	}
 
-	@GetMapping("")
-	@ResponseBody
-	public ResponseEntity<List<CartItemDTO>> getCartItemsByUsername(Authentication authentication) {
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		String username = userDetails.getUsername();
+    @Autowired
+    CartService cartService;
+    @Autowired
+    Converter converter;
 
-		if(cartService.findCartByUsername(username) == null){
-			cartService.createCartForUser(username);
-		}
+    @GetMapping("")
+    @ResponseBody
+    public ResponseEntity<List<CartItemDTO>> getCartItemsByUsername(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
 
-		return new ResponseEntity<>(cartService.findCartItemsDTOByUsername(username), HttpStatus.OK);
-	}
+        if (cartService.getCartByUsername(username) == null) {
+            cartService.createCartForUser(username);
+        }
 
-	@PostMapping("/add")
-	public ResponseEntity<String> addCartItemToCart(@RequestBody NewCartItemRequest cartItemRequest,
-													Authentication authentication) {
-		
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		String username = userDetails.getUsername();
+        List<CartItemDTO> cartItemDTOS = cartService.getCartItemsByUsername(username).stream().map(converter::toCartItemDTO).collect(Collectors.toList());
 
-		if(cartService.findCartByUsername(username) == null){
-			cartService.createCartForUser(username);
-		}
+        return new ResponseEntity<>(cartItemDTOS, HttpStatus.OK);
+    }
 
-		if(!availableQuantity(cartItemRequest.getQuantity(), itemService.getItemInventoryQuantityById(cartItemRequest.getItemId()))){
-			return new ResponseEntity<String>("Not enough quantity of this item in inventory", HttpStatus.OK);
-		}
-				
-		// id cuủa các item trong cart
-		List<Integer> IdOfItemsCurrent = new ArrayList<Integer>();
+    @PostMapping("/add")
+    public ResponseEntity<String> addCartItemToCart(@RequestBody CartItemRequest cartItemRequest,
+                                                    Authentication authentication) {
 
-		IdOfItemsCurrent = cartService.findCartItemsByUsername(username).stream().map(ci -> ci.getItem().getId())
-				.collect(Collectors.toList());
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-		if (IdOfItemsCurrent.contains(cartItemRequest.getItemId())) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
 
-			// get cartItem là item đó của user đó, + số lượng của cartItem đó lên
-			List<CartItem> cartItemsOfUser = cartService.findCartItemsByUsername(username);
+        try {
+            cartService.handleAddCartItemToCart(username, cartItemRequest);
+            return ResponseEntity.status(HttpStatus.OK).body("Add cart item to cart success");
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
 
-			Optional<CartItem> cartItemToUpdateOptional = cartItemsOfUser.stream()
-					.filter(c -> c.getItem().getId() == cartItemRequest.getItemId()).findFirst();
+    }
 
-			if (cartItemToUpdateOptional.isPresent()) {
-				CartItem cartItemToUpdate = cartItemToUpdateOptional.get();
+    @PostMapping("/update")
+    public ResponseEntity<String> updateCartItemQuantityInCart(
+            @RequestBody UpdateCartItemRequest updateCartItemRequest,
+            Authentication authentication) {
 
-				Integer newQuantity = cartItemToUpdate.getQuantity() + cartItemRequest.getQuantity();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
 
-				cartService.updateItemCartQuantity(username, cartItemToUpdate.getId(), newQuantity);
-				return new ResponseEntity<String>(
-						"Update cart item quantity success (because this item exist in this cart)", HttpStatus.OK);
-			}
-		} else {
-			cartService.addItemCartToCart(username, cartItemRequest.getItemId(), cartItemRequest.getQuantity());
-		}
+        try {
+            cartService.updateCartItemQuantity(username, updateCartItemRequest.getCartItemId(),
+                    updateCartItemRequest.getNewQuantity());
+            return new ResponseEntity<>("Update success", HttpStatus.OK);
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
 
-		return new ResponseEntity<>("Add cart item to cart success", HttpStatus.OK);
-	}
+    }
 
-	@PostMapping("/update")
-	public ResponseEntity<String> updateCartItemQuantityInCart(
-			@RequestBody UpdateCartItemRequest updateCartItemRequest,
-			Authentication authentication) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteCartItemById(@PathVariable Integer id, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
 
-		if(updateCartItemRequest.getNewQuantity() > cartItemService.
-																	findItemByCartItemId(
-																	updateCartItemRequest.getCartItemId())
-																	.getInventoryQuantity()){
-			return new ResponseEntity<>("Not enough item quantity", HttpStatus.OK);
-		}
+        try {
+            cartService.deleteCartItem(id, username);
+            return ResponseEntity.status(HttpStatus.OK).body("Delete cart item succesfully!!");
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
 
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		String username = userDetails.getUsername();
-		cartService.updateItemCartQuantity(username, updateCartItemRequest.getCartItemId(),
-				updateCartItemRequest.getNewQuantity());
+    }
 
-		return new ResponseEntity<>("Update success", HttpStatus.OK);
-	}
-
-	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<Void> deleteCartItemById(@PathVariable Integer id, Authentication authentication){
-		if(authentication == null || !authentication.isAuthenticated()) {
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
-		//
-		if(cartItemService.existById(id)){
-			cartItemService.deleteById(id);
-			return new ResponseEntity<>(HttpStatus.OK);
-		}
-		else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	}
-
-
-	private static boolean availableQuantity(Integer quantityRequest, Integer quantityAvailable){
-		if(quantityRequest > quantityAvailable) {
-			return false;
-		}else {
-			return true;
-		}
-	}
 }
