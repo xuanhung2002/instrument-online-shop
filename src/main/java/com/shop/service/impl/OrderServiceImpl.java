@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 @Service
 public class OrderServiceImpl implements OrderService {
     @Autowired
@@ -54,8 +53,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getOrdersByUsername(String username) {
         return orderRepository.getOrdersByUsername(username);
-    }
 
+    }
 
     @Override
     public List<Order> getAll() {
@@ -88,7 +87,6 @@ public class OrderServiceImpl implements OrderService {
         order.setPaymentMethod(paymentMethodRepository.getPaymentMethodByPaymentMethodEnum(PaymentMethodEnum.valueOf(orderRequestDTO.getPaymentMethod().toUpperCase())));
         order.setPaymentStatus(paymentStatusRepository.getPaymentStatusByPaymentStatusEnum(PaymentStatusEnum.valueOf(orderRequestDTO.getPaymentStatus().toUpperCase())));
         order.setOrderStatus(orderStatusRepository.getOrderStatusByOrderStatusEnum(OrderStatusEnum.PROCESSING));
-
         List<DetailItemOrder> detailItemOrders = new ArrayList<>();
 
         for (Integer idCartItem : orderRequestDTO.getIdCartItems()

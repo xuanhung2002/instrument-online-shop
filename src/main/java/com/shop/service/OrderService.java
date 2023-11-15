@@ -11,8 +11,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface OrderService {
+
     List<Order> getOrdersByUsername(String username);
     List<Order> getAll();
+
     Order save(Order order);
 
     BigDecimal calcTotalAmount(List<DetailItemOrder> detailItemOrder);

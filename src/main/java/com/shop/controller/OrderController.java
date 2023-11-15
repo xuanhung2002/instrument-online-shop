@@ -68,9 +68,9 @@ public class OrderController {
       return ResponseEntity.status(HttpStatus.OK).body("Cancel success");
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
     }
   }
-
   @PutMapping("updateOrderStatus/{id}")
   public ResponseEntity<?> updateStatusOrder(@PathVariable Integer id, @RequestParam("newOrderStatus") String newStatus) {
     orderService.updateOrderStatus(id, newStatus);

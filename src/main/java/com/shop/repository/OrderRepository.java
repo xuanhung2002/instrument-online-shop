@@ -13,6 +13,4 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Query("SELECT o FROM Order o WHERE o.user.account.username = :username")
     List<Order> getOrdersByUsername(String username);
-
-
 }
