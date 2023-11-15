@@ -1,9 +1,9 @@
 package com.shop.dto;
 
 import com.shop.entity.DetailItemOrder;
-import com.shop.entity.OrderStatus;
-import com.shop.entity.PaymentMethodEnum;
-import com.shop.entity.PaymentStatusEnum;
+import com.shop.enums.OrderStatusEnum;
+import com.shop.enums.PaymentMethodEnum;
+import com.shop.enums.PaymentStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ public class OrderResponseDTO {
     private BigDecimal totalAmount;
     private PaymentMethodEnum paymentMethod;
     private PaymentStatusEnum paymentStatus;
-    private OrderStatus orderStatus;
+    private OrderStatusEnum orderStatus;
     private List<DetailItemOrder> detailItemOrders;
 
 

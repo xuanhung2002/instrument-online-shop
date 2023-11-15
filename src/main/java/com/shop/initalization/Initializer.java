@@ -1,11 +1,11 @@
 package com.shop.initalization;
 
-import com.shop.entity.Account;
-import com.shop.entity.Role;
-import com.shop.entity.User;
-import com.shop.repository.AccountRepository;
-import com.shop.repository.RoleRepository;
-import com.shop.repository.UserRepository;
+import com.shop.entity.*;
+import com.shop.enums.OrderStatusEnum;
+import com.shop.enums.PaymentMethodEnum;
+import com.shop.enums.PaymentStatusEnum;
+import com.shop.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -17,6 +17,12 @@ public class Initializer implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    OrderStatusRepository orderStatusRepository;
+    @Autowired
+    PaymentMethodRepository paymentMethodRepository;
+    @Autowired
+    PaymentStatusRepository paymentStatusRepository;
 
     public Initializer(UserRepository userRepository, RoleRepository roleRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -29,6 +35,9 @@ public class Initializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         createRoleIfNotFound("ADMIN");
         createRoleIfNotFound("USER");
+        createPaymentMethodIfNotFound();
+        createOrderStatusIfNotFound();
+        createPaymentStatusIfNotFound();
         createRootUser();
     }
 
@@ -54,6 +63,34 @@ public class Initializer implements CommandLineRunner {
             user.setAccount(accountRepository.findByUsername("admin"));
             userRepository.save(user);
         }
+    }
+    private void createOrderStatusIfNotFound(){
+        for(OrderStatusEnum status : OrderStatusEnum.values()){
+            OrderStatus orderStatus = new OrderStatus();
+            orderStatus.setOrderStatusEnum(status);
+            if(!orderStatusRepository.existsByOrderStatusEnum(status)){
+                orderStatusRepository.save(orderStatus);
+            }
+        }
+    }
 
+    private void createPaymentStatusIfNotFound(){
+        for (PaymentStatusEnum status : PaymentStatusEnum.values()){
+            PaymentStatus paymentStatus = new PaymentStatus();
+            paymentStatus.setPaymentStatusEnum(status);
+            if(!paymentStatusRepository.existsByPaymentStatusEnum(status)){
+                paymentStatusRepository.save(paymentStatus);
+            }
+        }
+    }
+
+    private void createPaymentMethodIfNotFound(){
+        for (PaymentMethodEnum status : PaymentMethodEnum.values()){
+            PaymentMethod paymentMethod = new PaymentMethod();
+            paymentMethod.setPaymentMethodEnum(status);
+            if(!paymentMethodRepository.existsByPaymentMethodEnum(status)){
+                paymentMethodRepository.save(paymentMethod);
+            }
+        }
     }
 }

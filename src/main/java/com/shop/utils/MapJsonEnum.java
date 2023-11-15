@@ -1,7 +1,7 @@
 package com.shop.utils;
 
-import com.shop.entity.PaymentMethodEnum;
-import com.shop.entity.PaymentStatusEnum;
+import com.shop.enums.PaymentMethodEnum;
+import com.shop.enums.PaymentStatusEnum;
 
 public class MapJsonEnum {
     public static PaymentMethodEnum mapPaymentMethod(String paymentMethod) {

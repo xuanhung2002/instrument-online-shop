@@ -1,4 +1,4 @@
-package com.shop.entity;
+package com.shop.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,7 +11,6 @@ public enum PaymentStatusEnum {
     FAILED("Failed"),
     @JsonProperty("Cancelled")
     CANCELLED("Cancelled");
-    // Thêm các trạng thái thanh toán khác (nếu cần)
 
     private String displayName;
 
