@@ -90,9 +90,9 @@ public class Converter {
         orderResponseDTO.setAddress(order.getAddress());
         orderResponseDTO.setOrderDate(order.getOrderDate());
         orderResponseDTO.setTotalAmount(order.getTotalAmount());
-        orderResponseDTO.setPaymentMethod(order.getPaymentMethod());
-        orderResponseDTO.setPaymentStatus(order.getPaymentStatus());
-        orderResponseDTO.setOrderStatus(order.getOrderStatus());
+        orderResponseDTO.setPaymentMethod(order.getPaymentMethod().getPaymentMethodEnum());
+        orderResponseDTO.setPaymentStatus(order.getPaymentStatus().getPaymentStatusEnum());
+        orderResponseDTO.setOrderStatus(order.getOrderStatus().getOrderStatusEnum());
         orderResponseDTO.setDetailItemOrders(order.getDetailItemOrders());
         return orderResponseDTO;
     }

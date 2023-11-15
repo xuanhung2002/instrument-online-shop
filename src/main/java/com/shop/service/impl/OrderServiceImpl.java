@@ -2,16 +2,23 @@ package com.shop.service.impl;
 
 import com.shop.converter.Converter;
 import com.shop.dto.OrderRequestDTO;
-import com.shop.dto.OrderResponseDTO;
 import com.shop.entity.DetailItemOrder;
 import com.shop.entity.Order;
 import com.shop.entity.OrderStatus;
+import com.shop.enums.OrderStatusEnum;
+import com.shop.enums.PaymentMethodEnum;
+import com.shop.enums.PaymentStatusEnum;
 import com.shop.repository.OrderRepository;
+import com.shop.repository.OrderStatusRepository;
+import com.shop.repository.PaymentMethodRepository;
+import com.shop.repository.PaymentStatusRepository;
 import com.shop.service.CartItemService;
 import com.shop.service.CartService;
 import com.shop.service.OrderService;
 import com.shop.service.UserService;
 import com.shop.utils.MapJsonEnum;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +27,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
+import java.util.Optional;
 @Service
 public class OrderServiceImpl implements OrderService {
     @Autowired
@@ -34,26 +40,25 @@ public class OrderServiceImpl implements OrderService {
     CartItemService cartItemService;
     @Autowired
     CartService cartService;
+    @Autowired
+    OrderStatusRepository orderStatusRepository;
+    @Autowired
+    PaymentMethodRepository paymentMethodRepository;
+    @Autowired
+    PaymentStatusRepository paymentStatusRepository;
+    @Autowired
+    EntityManager entityManager;
+
 
     @Override
-    public List<OrderResponseDTO> getOrdersByUsername(String username) {
-        List<Order> orders = orderRepository.getOrdersByUsername(username);
-        List<OrderResponseDTO> orderResponseDTOs = new ArrayList<>();
-        for (Order order : orders
-        ) {
-            OrderResponseDTO orderResponseDTO = converter.toOrderResponseDTO(order);
-            orderResponseDTOs.add(orderResponseDTO);
-        }
-        return orderResponseDTOs;
+    public List<Order> getOrdersByUsername(String username) {
+        return orderRepository.getOrdersByUsername(username);
+
     }
 
-
     @Override
-    public List<OrderResponseDTO> getAll() {
-        return orderRepository.findAll()
-                .stream()
-                .map(converter::toOrderResponseDTO)
-                .collect(Collectors.toList());
+    public List<Order> getAll() {
+        return orderRepository.findAll();
     }
 
 
@@ -79,10 +84,9 @@ public class OrderServiceImpl implements OrderService {
         order.setCustomerPhone(orderRequestDTO.getCustomerPhone());
         order.setOrderDate(LocalDateTime.now());
         order.setAddress(orderRequestDTO.getAddress());
-        order.setPaymentMethod(MapJsonEnum.mapPaymentMethod(orderRequestDTO.getPaymentMethod()));
-        order.setPaymentStatus(MapJsonEnum.mapPaymentStatus(orderRequestDTO.getPaymentStatus()));
-        order.setOrderStatus(OrderStatus.PROCESSING);
-
+        order.setPaymentMethod(paymentMethodRepository.getPaymentMethodByPaymentMethodEnum(PaymentMethodEnum.valueOf(orderRequestDTO.getPaymentMethod().toUpperCase())));
+        order.setPaymentStatus(paymentStatusRepository.getPaymentStatusByPaymentStatusEnum(PaymentStatusEnum.valueOf(orderRequestDTO.getPaymentStatus().toUpperCase())));
+        order.setOrderStatus(orderStatusRepository.getOrderStatusByOrderStatusEnum(OrderStatusEnum.PROCESSING));
         List<DetailItemOrder> detailItemOrders = new ArrayList<>();
 
         for (Integer idCartItem : orderRequestDTO.getIdCartItems()
@@ -99,6 +103,41 @@ public class OrderServiceImpl implements OrderService {
 
         return save(order);
 
+    }
+    @Transactional
+    @Override
+    public void userCancelOrder(Integer id, String username) {
+        Optional<Order> orderOpt = orderRepository.findById(id);
+        if (orderOpt.isPresent()) {
+            Order order = orderOpt.get();
+            if (order.getOrderStatus().getOrderStatusEnum() == OrderStatusEnum.PROCESSING &&
+                    order.getUser().getAccount().getUsername().equals(username)) {
+                order.setOrderStatus(getOrderStatusByEnum(OrderStatusEnum.CANCELLED));
+                orderRepository.save(order);
+            } else {
+                throw new IllegalArgumentException("Unable to cancel order. Either the order is not in PROCESSING state or it does not belong to the specified user.");
+            }
+        } else {
+            throw new EntityNotFoundException("This order is not existed");
+        }
+    }
+
+
+    @Override
+    public void updateOrderStatus(Integer orderId, String newStatus) {
+        Optional<Order> orderOpt = orderRepository.findById(orderId);
+        if (orderOpt.isPresent()) {
+            Order order = orderOpt.get();
+            order.setOrderStatus(getOrderStatusByEnum(OrderStatusEnum.valueOf(newStatus)));
+            orderRepository.save(order);
+        } else {
+            throw new EntityNotFoundException("This order is not existed");
+        }
+    }
+
+    @Override
+    public OrderStatus getOrderStatusByEnum(OrderStatusEnum orderStatusEnum) {
+        return orderStatusRepository.getOrderStatusByOrderStatusEnum(orderStatusEnum);
     }
 
 }

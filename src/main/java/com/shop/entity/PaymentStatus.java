@@ -1,6 +1,6 @@
 package com.shop.entity;
 
-import com.shop.enums.OrderStatusEnum;
+import com.shop.enums.PaymentStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,15 +14,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "order_status")
-public class OrderStatus {
+@Table(name = "payment_status")
+public class PaymentStatus {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "status")
-  private OrderStatusEnum orderStatusEnum;
+  @Column(name ="status")
+  private PaymentStatusEnum paymentStatusEnum;
 
-  @OneToMany(mappedBy = "orderStatus")
+  @OneToMany(mappedBy = "paymentStatus")
   private List<Order> orders;
 }

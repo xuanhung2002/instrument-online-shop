@@ -1,6 +1,9 @@
 package com.shop.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.shop.enums.OrderStatusEnum;
+import com.shop.enums.PaymentMethodEnum;
+import com.shop.enums.PaymentStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,16 +43,18 @@ public class Order {
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
-    @Column(name = "payment_method")
-    private PaymentMethodEnum paymentMethod;
+    @ManyToOne
+    @JoinColumn(name = "payment_method")
+    private PaymentMethod paymentMethod;
 
-    @Column(name = "payment_status")
-    private PaymentStatusEnum paymentStatus;
+    @ManyToOne
+    @JoinColumn(name = "payment_status")
+    private PaymentStatus paymentStatus;
 
-    @Column(name = "status")
+    @ManyToOne
+    @JoinColumn(name = "status")
     private OrderStatus orderStatus;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetailItemOrder> detailItemOrders;
 
