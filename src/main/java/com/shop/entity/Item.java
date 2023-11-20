@@ -46,7 +46,11 @@ public class Item {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "item")
 	private List<CartItem> cartItems;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "item")
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "item")
 	private List<Image> images;
+
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "item")
+	private List<DetailItemOrder> detailItemOrders;
 
 }

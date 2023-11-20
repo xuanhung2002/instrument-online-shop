@@ -5,12 +5,14 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.shop.entity.Category;
 import com.shop.entity.Item;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer> {
@@ -24,4 +26,9 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 
     @Query("SELECT i FROM Item i WHERE LOWER(i.name) like LOWER(CONCAT('%', :searchKey, '%'))")
     List<Item> searchItems(@Param("searchKey") String searchKey);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM Item i WHERE i.id = :itemId")
+    void deleteItemById(@Param("itemId") Integer itemId);
 }

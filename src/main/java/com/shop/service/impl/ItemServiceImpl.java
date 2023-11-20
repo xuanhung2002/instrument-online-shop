@@ -96,9 +96,10 @@ public class ItemServiceImpl implements ItemService {
     return itemRepository.getItemInventoryQuantityById(idItem);
   }
 
+  @Transactional
   @Override
   public void deleteItemById(Integer id) {
-    itemRepository.deleteById(id);
+    itemRepository.deleteItemById(id);
   }
 
   @Override

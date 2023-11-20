@@ -31,7 +31,6 @@ public class CartItem {
     @Column(name = "quantity")
     private Integer quantity;
 
-
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
